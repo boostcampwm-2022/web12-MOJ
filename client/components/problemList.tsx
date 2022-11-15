@@ -8,6 +8,10 @@ const style = {
     flex-direction: column;
     border-radius: 8px;
     box-shadow: 0px 0px 1.5px 1.5px rgba(0, 0, 0, 0.15);
+
+    & > :not(:last-child) {
+      border-bottom: 1px solid #e0e0e0;
+    }
   `,
   head: css`
     display: flex;
@@ -19,7 +23,7 @@ const style = {
     flex: ${weight};
   `,
   cell: css`
-    padding: 12px 20px;
+    padding: 20px;
   `,
   center: css`
     text-align: center;

@@ -3,14 +3,16 @@ import { css } from '@emotion/react';
 import ProblemList from '../components/problemList';
 import axios from 'axios';
 import axiosInstance from '../axios';
+import Paginator from '../components/paginator';
 
 const style = {
   container: css`
-    margin: 0 20%;
+    margin: 64px 20%;
   `,
   title: css`
     font-size: 32px;
     font-weight: bold;
+    margin: 42px 12px;
   `,
 };
 

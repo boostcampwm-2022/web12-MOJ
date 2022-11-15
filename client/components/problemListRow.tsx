@@ -21,7 +21,7 @@ const style = {
     flex: 4;
   `,
   cell: css`
-    padding: 12px 20px;
+    padding: 20px;
   `,
   center: css`
     text-align: center;
@@ -29,11 +29,14 @@ const style = {
   blue: css`
     color: #3949ab;
   `,
+  unset: css`
+    all: unset;
+  `,
 };
 
 function ProblemListRow({ id, title, rate }: ProblemListRowProps) {
   return (
-    <Link href={`/problem/${id}`}>
+    <Link css={style.unset} href={`/problem/${id}`}>
       <div css={style.row}>
         <div css={[style.flex1, style.cell]}>{id}</div>
         <div css={[style.flex4, style.cell, style.blue]}>{title}</div>
