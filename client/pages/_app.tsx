@@ -1,5 +1,6 @@
 import { Global, css } from '@emotion/react';
 import type { AppProps } from 'next/app';
+import GNB from '../components/GNB';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -11,6 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         `}
       />
+      <GNB />
       <Component {...pageProps} />
     </>
   );
