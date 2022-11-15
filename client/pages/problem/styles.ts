@@ -19,7 +19,7 @@ export const codeContainerStyle = css`
 `;
 
 export const controlPanelStyle = css`
-  height: 50px;
+  height: 49px;
 
   display: flex;
   align-items: center;
