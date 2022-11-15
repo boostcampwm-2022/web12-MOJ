@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Logo from './Logo';
 import Menu from './Menu';
+import UserInfo from './UserInfo';
 
 const gnbStyle = css`
   background-color: #3949ab;
@@ -16,11 +17,14 @@ const gnbStyle = css`
 
 function GNB() {
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+
   useEffect(() => {
     (async () => {
       try {
-        (await axios('/api/user/login-status')).data;
+        const result = (await axios('/api/user/login-status')).data;
         setLoggedIn(true);
+        setUserName(result.userName);
       } catch (error) {
         setLoggedIn(false);
       }
@@ -31,6 +35,7 @@ function GNB() {
     <div css={gnbStyle}>
       <Logo />
       <Menu isLoggedIn={isLoggedIn} />
+      <UserInfo isLoggedIn={isLoggedIn} userName={userName} />
     </div>
   );
 }
