@@ -61,6 +61,9 @@ function ProblemList({ pageCount, currentPage, problems }: ProblemListProps) {
           </div>
         ))}
       </div>
+      {problems.map((problem) => (
+        <ProblemListRow key={problem.id} {...problem} />
+      ))}
     </div>
   );
 }
