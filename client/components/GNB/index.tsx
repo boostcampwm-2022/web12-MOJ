@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import Logo from './Logo';
 
 const gnbStyle = css`
   background-color: #3949ab;
@@ -11,7 +12,11 @@ const gnbStyle = css`
 `;
 
 function GNB() {
-  return <div css={gnbStyle}> </div>;
+  return (
+    <div css={gnbStyle}>
+      <Logo />
+    </div>
+  );
 }
 
 export default GNB;
