@@ -4,6 +4,7 @@ import ProblemList from '../components/problemList';
 import axios from 'axios';
 import axiosInstance from '../axios';
 import Paginator from '../components/paginator';
+import { useRouter } from 'next/router';
 
 const style = {
   container: css`
@@ -29,16 +30,28 @@ interface ProblemListResponseData {
 }
 
 function Home() {
+  const router = useRouter();
+
   const [problems, setProblems] =
     React.useState<ProblemListResponseData | null>(null);
 
   React.useEffect(() => {
+    if (!router.isReady) return;
+
     async function fetchProblemList() {
-      const { data } = await axiosInstance.get('/api/problem');
+      const page = router.query.page;
+
+      let _page = 1;
+      if (!page) _page = 1;
+      else if (Array.isArray(page)) _page = 1;
+      else _page = +page;
+
+      const { data } = await axiosInstance.get(`/api/problem?page=${_page}`);
       setProblems(data);
     }
+
     fetchProblemList();
-  }, []);
+  }, [router.isReady, router.query.page]);
 
   return (
     <div css={style.container}>

@@ -13,6 +13,9 @@ const style = {
     font-size: 16px;
     font-weight: 400;
     color: #636971;
+    :hover {
+      cursor: pointer;
+    }
   `,
   flex1: css`
     flex: 1;

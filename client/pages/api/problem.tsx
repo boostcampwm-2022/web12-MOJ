@@ -5,16 +5,23 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === 'GET') {
+    const { page } = req.query;
+    let _page = 1;
+
+    if (!page) _page = 1;
+    else if (Array.isArray(page)) _page = 1;
+    else _page = +page;
+
     const problems = Array.from({ length: 20 }, (_, i) => {
       return {
-        id: i + 1,
-        title: `${i + 1}번째 문제 - 알고리즘 망령 효석이`,
+        id: (_page - 1) * 20 + i + 1,
+        title: `${(_page - 1) * 20 + i + 1}번째 문제 - 알고리즘 망령 효석이`,
         rate: 50.5 + i,
       };
     });
 
     const pageCount = 8;
-    const currentPage = 1;
+    const currentPage = _page;
 
     res.status(200).json({
       pageCount: pageCount,

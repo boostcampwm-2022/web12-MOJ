@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import React from 'react';
+import Paginator from './paginator';
 import ProblemListRow from './problemListRow';
 
 const style = {
@@ -68,6 +69,12 @@ function ProblemList({ pageCount, currentPage, problems }: ProblemListProps) {
       {problems.map((problem) => (
         <ProblemListRow key={problem.id} {...problem} />
       ))}
+
+      <Paginator
+        pageCount={pageCount}
+        currentPage={currentPage}
+        href={(page) => `/?page=${page}`}
+      />
     </div>
   );
 }
