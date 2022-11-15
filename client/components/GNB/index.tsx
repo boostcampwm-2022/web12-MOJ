@@ -1,5 +1,8 @@
 import { css } from '@emotion/react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Logo from './Logo';
+import Menu from './Menu';
 
 const gnbStyle = css`
   background-color: #3949ab;
@@ -12,9 +15,22 @@ const gnbStyle = css`
 `;
 
 function GNB() {
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  useEffect(() => {
+    (async () => {
+      try {
+        (await axios('/api/user/login-status')).data;
+        setLoggedIn(true);
+      } catch (error) {
+        setLoggedIn(false);
+      }
+    })();
+  }, []);
+
   return (
     <div css={gnbStyle}>
       <Logo />
+      <Menu isLoggedIn={isLoggedIn} />
     </div>
   );
 }
