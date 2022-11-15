@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import Link from 'next/link';
 
 interface ProblemListRowProps {
   id: number;
@@ -32,11 +33,13 @@ const style = {
 
 function ProblemListRow({ id, title, rate }: ProblemListRowProps) {
   return (
-    <div css={style.row}>
-      <div css={[style.flex1, style.cell]}>{id}</div>
-      <div css={[style.flex4, style.cell, style.blue]}>{title}</div>
-      <div css={[style.flex1, style.cell, style.center]}>{`${rate}%`}</div>
-    </div>
+    <Link href={`/problem/${id}`}>
+      <div css={style.row}>
+        <div css={[style.flex1, style.cell]}>{id}</div>
+        <div css={[style.flex4, style.cell, style.blue]}>{title}</div>
+        <div css={[style.flex1, style.cell, style.center]}>{`${rate}%`}</div>
+      </div>
+    </Link>
   );
 }
 
