@@ -16,6 +16,7 @@ function ProblemDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [problem, setProblem] = useState<Problem>();
+  const [code, setCode] = useState<string>('');
 
   useEffect(() => {
     if (!id) return;
@@ -41,7 +42,7 @@ function ProblemDetail() {
         `}
       >
         <div css={codeContainerStyle}>
-          <CodeContainer />
+          <CodeContainer setCode={setCode} />
         </div>
         <div css={controlPanelStyle}>
           <Button>제출</Button>

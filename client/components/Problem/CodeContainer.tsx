@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import Editor, { useMonaco } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import { css } from '@emotion/react';
+import { Dispatch, SetStateAction } from 'react';
 
-const CodeContainer = () => {
-  const [code, setCode] = useState('');
+interface CodeContainerProps {
+  setCode: Dispatch<SetStateAction<string>>;
+}
 
+function CodeContainer({ setCode }: CodeContainerProps) {
   const handleChange = (newCode: string | undefined) => {
     if (!newCode) return;
     setCode(newCode);
@@ -35,6 +37,6 @@ const CodeContainer = () => {
       </div>
     </div>
   );
-};
+}
 
 export default CodeContainer;
