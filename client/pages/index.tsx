@@ -1,10 +1,8 @@
 import React from 'react';
 import { css } from '@emotion/react';
-import ProblemList from '../components/problemList';
-import axios from 'axios';
 import axiosInstance from '../axios';
-import Paginator from '../components/paginator';
 import { useRouter } from 'next/router';
+import List from '../components/list';
 
 const style = {
   container: css`
@@ -59,7 +57,38 @@ function Home() {
       {problems === null ? (
         <div>로딩중</div>
       ) : (
-        <ProblemList {...problems}></ProblemList>
+        <>
+          <List
+            pageCount={problems.pageCount}
+            currentPage={problems.currentPage}
+            data={problems.problems}
+            mapper={[
+              { path: 'id', name: '문제 번호', weight: 1 },
+              {
+                path: 'title',
+                name: '제목',
+                weight: 4,
+                style: {
+                  row: css`
+                    color: #3949ab;
+                  `,
+                },
+              },
+              {
+                path: 'rate',
+                name: '정답 비율',
+                weight: 1,
+                style: {
+                  all: css`
+                    text-align: center;
+                  `,
+                },
+              },
+            ]}
+            rowHref={(problem: ProblemSummary) => `/problem/${problem.id}`}
+            pageHref={(page: number) => `/?page=${page}`}
+          />
+        </>
       )}
     </div>
   );
