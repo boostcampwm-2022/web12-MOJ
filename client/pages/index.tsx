@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/react';
 import axiosInstance from '../axios';
 import { useRouter } from 'next/router';
-import List from '../components/List/list';
+import List from '../components/List';
 
 const style = {
   container: css`
