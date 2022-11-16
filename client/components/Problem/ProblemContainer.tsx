@@ -45,12 +45,12 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
 
       {problem.ioExample.map(({ input, output }, idx) => {
         return (
-          <>
+          <div key={idx}>
             <h3>예제 입력 {idx + 1}</h3>
             {input}
             <h3>예제 출력 {idx + 1}</h3>
             {output}
-          </>
+          </div>
         );
       })}
       <h3>입출력 예제 설명</h3>
