@@ -31,6 +31,15 @@ function ProblemDetail() {
     })();
   }, [id]);
 
+  const handleSubmission = async () => {
+    try {
+      await axios.post(`/api/problems/${id}/submissions`, { code });
+      router.push('/status');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div css={problemDetailStyle}>
       <div css={problemViewerStyle}>
@@ -45,7 +54,7 @@ function ProblemDetail() {
           <CodeContainer setCode={setCode} />
         </div>
         <div css={controlPanelStyle}>
-          <Button>제출</Button>
+          <Button onClick={handleSubmission}>제출</Button>
         </div>
       </div>
     </div>
