@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
+import CodeContainer from '../../components/Problem/CodeContainer';
 import ProblemContainer from '../../components/Problem/ProblemContainer';
 import {
   codeContainerStyle,
@@ -39,7 +40,9 @@ function ProblemDetail() {
           width: 50%;
         `}
       >
-        <div css={codeContainerStyle}>코드 영역이요</div>
+        <div css={codeContainerStyle}>
+          <CodeContainer />
+        </div>
         <div css={controlPanelStyle}>
           <Button>제출</Button>
         </div>
