@@ -1,5 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
+import { ReactNode } from 'react';
 
 interface ListRowProps<T> {
   row: T;
@@ -12,6 +13,7 @@ interface ListRowProps<T> {
       all?: SerializedStyles;
     };
     weight: number;
+    format?: (value: any) => ReactNode;
   }[];
 
   rowHref: (row: T) => string;
@@ -42,7 +44,7 @@ function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
   return (
     <Link css={style.unset} href={rowHref(row)}>
       <div css={style.row}>
-        {mapper.map(({ weight, style: _style, path }) => {
+        {mapper.map(({ weight, style: _style, path, format }) => {
           return (
             <div
               key={path.toString()}
@@ -53,7 +55,11 @@ function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
                 _style?.row,
               ]}
             >
-              {row[path] /* TODO: 너 왜 타입에러야. */}
+              {
+                format
+                  ? format(row[path])
+                  : row[path] /* TODO: 너 왜 타입에러야. */
+              }
             </div>
           );
         })}

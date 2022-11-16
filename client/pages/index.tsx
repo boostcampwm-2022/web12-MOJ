@@ -83,6 +83,7 @@ function Home() {
                     text-align: center;
                   `,
                 },
+                format: (value: number) => `${value}%`,
               },
             ]}
             rowHref={(problem: ProblemSummary) => `/problem/${problem.id}`}

@@ -6,6 +6,7 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Paginator from './paginator';
 import ListRow from './listRow';
+import { ReactNode } from 'react';
 
 interface ListProps<T> {
   pageCount: number;
@@ -22,6 +23,7 @@ interface ListProps<T> {
       all?: SerializedStyles;
     };
     weight: number;
+    format?: (value: any) => ReactNode;
   }[];
 
   rowHref: (row: T) => string;
