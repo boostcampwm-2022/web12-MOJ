@@ -8,23 +8,25 @@ import Paginator from './paginator';
 import ListRow from './listRow';
 import { ReactNode } from 'react';
 
+interface ListMapper<T> {
+  path: keyof T;
+  name: string;
+  style?: {
+    head?: SerializedStyles;
+    row?: ((row: T) => SerializedStyles) | SerializedStyles;
+    all?: SerializedStyles;
+  };
+  weight: number;
+  format?: (value: any) => ReactNode;
+}
+
 interface ListProps<T> {
   pageCount: number;
   currentPage: number;
 
   data: T[];
 
-  mapper: {
-    path: keyof T;
-    name: string;
-    style?: {
-      head?: SerializedStyles;
-      row?: SerializedStyles;
-      all?: SerializedStyles;
-    };
-    weight: number;
-    format?: (value: any) => ReactNode;
-  }[];
+  mapper: ListMapper<T>[];
 
   rowHref: (row: T) => string;
   pageHref: (page: number) => string;

@@ -2,19 +2,22 @@ import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
+interface ListMapper<T> {
+  path: keyof T;
+  name: string;
+  style?: {
+    head?: SerializedStyles;
+    row?: ((row: T) => SerializedStyles) | SerializedStyles;
+    all?: SerializedStyles;
+  };
+  weight: number;
+  format?: (value: any) => ReactNode;
+}
+
 interface ListRowProps<T> {
   row: T;
 
-  mapper: {
-    path: keyof T;
-    style?: {
-      head?: SerializedStyles;
-      row?: SerializedStyles;
-      all?: SerializedStyles;
-    };
-    weight: number;
-    format?: (value: any) => ReactNode;
-  }[];
+  mapper: ListMapper<T>[];
 
   rowHref: (row: T) => string;
 }
@@ -34,25 +37,45 @@ const style = {
     font-size: 16px;
     font-weight: 400;
     color: #636971;
+
+    align-items: center;
     :hover {
       cursor: pointer;
     }
   `,
 };
 
+function isFunction(x: any) {
+  return Object.prototype.toString.call(x) == '[object Function]';
+}
+
 function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
   return (
     <Link css={style.unset} href={rowHref(row)}>
       <div css={style.row}>
         {mapper.map(({ weight, style: _style, path, format }) => {
+          const allStyle = _style?.all;
+
+          const get = (
+            style:
+              | SerializedStyles
+              | ((row: T) => SerializedStyles)
+              | undefined,
+            row: T,
+          ) => {
+            if (style === undefined) return undefined;
+            else if (typeof style === 'function') return style(row);
+            else return style;
+          };
+
           return (
             <div
               key={path.toString()}
               css={[
                 style.cell,
                 style.flexWeight(weight),
-                _style?.all,
-                _style?.row,
+                get(_style?.all, row),
+                get(_style?.row, row),
               ]}
             >
               {
