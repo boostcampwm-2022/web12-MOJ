@@ -1,9 +1,9 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 
 interface ListMapper<T> {
-  path: keyof T;
+  path: undefined | keyof T;
   name: string;
   style?: {
     head?: SerializedStyles;
@@ -12,6 +12,7 @@ interface ListMapper<T> {
   };
   weight: number;
   format?: (value: any) => ReactNode;
+  onclick?: MouseEventHandler;
 }
 
 interface ListRowProps<T> {
@@ -53,39 +54,42 @@ function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
   return (
     <Link css={style.unset} href={rowHref(row)}>
       <div css={style.row}>
-        {mapper.map(({ weight, style: _style, path, format }) => {
-          const allStyle = _style?.all;
+        {mapper.map(
+          ({ weight, style: _style, path, format, name, onclick }) => {
+            const get = (
+              style:
+                | SerializedStyles
+                | ((row: T) => SerializedStyles)
+                | undefined,
+              row: T,
+            ) => {
+              if (style === undefined) return undefined;
+              else if (typeof style === 'function') return style(row);
+              else return style;
+            };
 
-          const get = (
-            style:
-              | SerializedStyles
-              | ((row: T) => SerializedStyles)
-              | undefined,
-            row: T,
-          ) => {
-            if (style === undefined) return undefined;
-            else if (typeof style === 'function') return style(row);
-            else return style;
-          };
-
-          return (
-            <div
-              key={path.toString()}
-              css={[
-                style.cell,
-                style.flexWeight(weight),
-                get(_style?.all, row),
-                get(_style?.row, row),
-              ]}
-            >
-              {
-                format
-                  ? format(row[path])
-                  : row[path] /* TODO: 너 왜 타입에러야. */
-              }
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={name}
+                css={[
+                  style.cell,
+                  style.flexWeight(weight),
+                  get(_style?.all, row),
+                  get(_style?.row, row),
+                ]}
+                onClick={onclick}
+              >
+                {
+                  format
+                    ? format(path ? row[path] : '')
+                    : path
+                    ? (row[path] as ReactNode)
+                    : '' /* TODO: 너 왜 타입에러야. */
+                }
+              </div>
+            );
+          },
+        )}
       </div>
     </Link>
   );

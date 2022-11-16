@@ -1,15 +1,10 @@
-// 리스트
-// 헤드
-// 목록
-// 페이지네이션
-
 import { css, SerializedStyles } from '@emotion/react';
 import Paginator from './paginator';
 import ListRow from './listRow';
-import { ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 
 interface ListMapper<T> {
-  path: keyof T;
+  path: undefined | keyof T;
   name: string;
   style?: {
     head?: SerializedStyles;
@@ -18,6 +13,7 @@ interface ListMapper<T> {
   };
   weight: number;
   format?: (value: any) => ReactNode;
+  onclick?: MouseEventHandler;
 }
 
 interface ListProps<T> {
@@ -48,6 +44,8 @@ const style = {
     font-size: 14px;
     font-weight: bold;
     color: #636971;
+
+    align-items: center;
   `,
   flexWeight: (weight: number) => css`
     flex: ${weight};
