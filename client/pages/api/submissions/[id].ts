@@ -2,6 +2,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 function mockHandler(req: NextApiRequest, res: NextApiResponse) {
   const mockData = {
+    status: {
+      id: 1,
+      user: 'hyoseok',
+      title: `알고리즘 망령 효석이`,
+      result: Math.floor(Math.random() * 4 + 1),
+      time: Math.floor(Math.random() * 150),
+      datetime: new Date().getTime(),
+    },
     code: `import threading, zipfile
 import struct
 
