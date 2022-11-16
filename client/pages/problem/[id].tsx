@@ -23,7 +23,7 @@ function ProblemDetail() {
 
     (async () => {
       try {
-        const result = await (await axios(`/api/problem/${id}`)).data;
+        const result = await (await axios(`/api/problems/${id}`)).data;
         setProblem(result);
       } catch (err) {
         console.error(err);
