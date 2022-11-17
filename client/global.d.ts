@@ -9,3 +9,9 @@ interface Problem {
   timeLimit: number;
   memoryLimit: number;
 }
+
+interface TestCase {
+  id: number;
+  input: string;
+  output: string;
+}
