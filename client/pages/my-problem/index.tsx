@@ -81,7 +81,7 @@ interface MyProblemSummary {
   id: number;
   title: string;
   datetime: number;
-  state: number;
+  visible: number;
 }
 
 interface StatusListResponseData {
@@ -110,7 +110,10 @@ function MyProblem() {
     ModalCloseState | ModalOpenstate
   >({ isShowModal: false });
 
+  const [needRefetch, setNeedRefetch] = React.useState<boolean>(true);
+
   React.useEffect(() => {
+    if (!needRefetch) return;
     if (!router.isReady) return;
 
     async function fetchMyProblemList() {
@@ -124,10 +127,11 @@ function MyProblem() {
 
       const { data } = await axiosInstance.get(`/api/problems?page=${_page}`);
       setMyProblems(data);
+      setNeedRefetch(false);
     }
 
     fetchMyProblemList();
-  }, [router.isReady, router.query.page]);
+  }, [router.isReady, router.query.page, needRefetch]);
 
   return (
     <>
@@ -165,8 +169,10 @@ function MyProblem() {
                         `/api/problems/${isShowModal.id}`,
                       );
 
-                      if (result.status === 200) Router.reload();
-                      else {
+                      if (result.status === 200) {
+                        setNeedRefetch(true);
+                        setIsShowModal({ isShowModal: false });
+                      } else {
                         // 에러처리
                       }
                     }}
@@ -275,7 +281,7 @@ function MyProblem() {
                   ),
                 },
                 {
-                  path: 'state',
+                  path: 'visible',
                   name: '공개/비공개',
                   weight: 0.5,
                   style: {
@@ -283,8 +289,19 @@ function MyProblem() {
                       text-align: center;
                     `,
                   },
-                  format: (state: number) =>
-                    state === 0 ? <Toggle.Off /> : <Toggle.On />,
+                  onclick: async (e, row: MyProblemSummary) => {
+                    e.preventDefault();
+                    const result = await axiosInstance.patch(
+                      `/api/problems/${row.id}/visible`,
+                    );
+                    if (result.status === 200) {
+                      setNeedRefetch(true);
+                    } else {
+                      // 에러처리
+                    }
+                  },
+                  format: (visible: boolean) =>
+                    visible ? <Toggle.Off /> : <Toggle.On />,
                 },
               ]}
               rowHref={(status: MyProblemSummary) =>
