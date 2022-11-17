@@ -111,28 +111,37 @@ function MyProblem() {
     ModalCloseState | ModalOpenstate
   >({ isShowModal: false });
 
-  const [needRefetch, setNeedRefetch] = React.useState<boolean>(true);
-
-  React.useEffect(() => {
-    if (!needRefetch) return;
+  function getSafePage() {
     if (!router.isReady) return;
 
-    async function fetchMyProblemList() {
-      const page = router.query.page;
-      const userName = 'hyoseok0604';
+    const page = router.query.page;
 
-      let _page = 1;
-      if (!page) _page = 1;
-      else if (Array.isArray(page)) _page = 1;
-      else _page = +page;
+    let _page = 1;
+    if (!page) _page = 1;
+    else if (Array.isArray(page)) _page = 1;
+    else _page = +page;
 
-      const { data } = await axiosInstance.get(`/api/problems?page=${_page}`);
-      setMyProblems(data);
-      setNeedRefetch(false);
-    }
+    return _page;
+  }
 
-    fetchMyProblemList();
-  }, [router.isReady, router.query.page, needRefetch]);
+  async function fetchMyProblemList(page: number) {
+    const { data } = await axiosInstance.get(`/api/problems?page=${page}`);
+
+    setMyProblems(data);
+  }
+
+  React.useEffect(() => {
+    if (!router.isReady) return;
+
+    const page = router.query.page;
+
+    let _page = 1;
+    if (!page) _page = 1;
+    else if (Array.isArray(page)) _page = 1;
+    else _page = +page;
+
+    fetchMyProblemList(_page);
+  }, [router.isReady, router.query.page]);
 
   return (
     <>
@@ -171,7 +180,9 @@ function MyProblem() {
                       );
 
                       if (result.status === 200) {
-                        setNeedRefetch(true);
+                        const page = getSafePage();
+                        if (!page) return;
+                        fetchMyProblemList(page);
                         setIsShowModal({ isShowModal: false });
                       } else {
                         // 에러처리
@@ -296,7 +307,9 @@ function MyProblem() {
                       `/api/problems/${row.id}/visible`,
                     );
                     if (result.status === 200) {
-                      setNeedRefetch(true);
+                      const page = getSafePage();
+                      if (!page) return;
+                      fetchMyProblemList(page);
                     } else {
                       // 에러처리
                     }

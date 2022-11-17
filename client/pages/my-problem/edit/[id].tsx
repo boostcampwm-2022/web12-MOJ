@@ -1,6 +1,6 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import dynamic from 'next/dynamic';
-import { Editor } from '@toast-ui/react-editor';
+import { Editor, EditorProps } from '@toast-ui/react-editor';
 import { css } from '@emotion/react';
 import React, { forwardRef, useEffect } from 'react';
 import Button from '../../../components/common/Button';
@@ -78,10 +78,6 @@ function NewMyProblem() {
   };
 
   const router = useRouter();
-
-  React.useEffect(() => {
-    contentEditorRef.current?.getInstance().focus();
-  }, []);
 
   React.useEffect(() => {
     if (!router.isReady) return;
@@ -180,7 +176,14 @@ function NewMyProblem() {
         </Button>
         <Button
           onClick={async () => {
-            const result = await axiosInstance.put('/api/problems', {
+            const id = router.query.id;
+
+            let _id = 1;
+            if (!id) _id = 1;
+            else if (Array.isArray(id)) _id = 1;
+            else _id = +id;
+
+            const result = await axiosInstance.put(`/api/problems/${_id}`, {
               title: title,
               timeLimit: timeLimit,
               memoryLimit: 512,
@@ -191,7 +194,7 @@ function NewMyProblem() {
               example: exampleEditorRef.current?.getInstance().getMarkdown(),
               examples: examples,
             });
-            if (result.status === 201) {
+            if (result.status === 200) {
               Router.push('/my-problem');
             } else {
               // 에러처리

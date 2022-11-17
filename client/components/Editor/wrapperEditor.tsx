@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Editor, EditorProps } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
@@ -16,7 +15,6 @@ const WrappedEditor = (
       previewStyle="vertical"
       height="400px"
       initialEditType="wysiwyg"
-      useCommandShortcut={true}
     />
   );
 };
