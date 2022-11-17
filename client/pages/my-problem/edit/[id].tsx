@@ -80,6 +80,10 @@ function NewMyProblem() {
   const router = useRouter();
 
   React.useEffect(() => {
+    contentEditorRef.current?.getInstance().focus();
+  }, []);
+
+  React.useEffect(() => {
     if (!router.isReady) return;
 
     async function fetchProblem() {
@@ -105,6 +109,7 @@ function NewMyProblem() {
 
     fetchProblem();
   }, [router.isReady, router.query.id]);
+
   return (
     <div css={style.container}>
       <div css={style.title}>문제 추가</div>
