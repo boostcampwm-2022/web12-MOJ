@@ -1,4 +1,4 @@
-const problems = Array.from({ length: 1 }, (_, i) => {
+const problems = Array.from({ length: 57 }, (_, i) => {
   return {
     id: i + 1,
     title: `${i + 1}번째 문제 - 알고리즘 망령 효석이`,
@@ -12,6 +12,7 @@ const problems = Array.from({ length: 1 }, (_, i) => {
     rate: Math.floor(Math.random() * 100) + Math.floor(Math.random() * 10) / 10,
     datetime: new Date().getTime(),
     visible: Math.floor(Math.random() * 2) === 0 ? false : true,
+    examples: [{ input: '213', output: '12323' }],
   };
 }).reverse();
 
