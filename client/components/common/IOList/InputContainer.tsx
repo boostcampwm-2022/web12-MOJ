@@ -13,13 +13,17 @@ const style = {
     flex-direction: column;
     padding: 10px;
     width: 50%;
+    max-width: 50%;
   `,
   input: css`
     border: none;
     background-color: #eaeaea;
     border-radius: 3px;
-    height: 25px;
+    min-height: 25px;
+    height: 100px;
     appearance: none;
+    padding: 10px 15px;
+    resize: none;
     &:focus {
       outline: none;
     }
@@ -34,10 +38,10 @@ function InputContainer({ title, value, setValue }: InputContaierProps) {
   return (
     <div css={style.container}>
       <div css={style.title}>{title}</div>
-      <input
+      <textarea
         css={style.input}
         value={value}
-        onChange={(ev: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(ev: React.ChangeEvent<HTMLTextAreaElement>) =>
           setValue(ev.target.value)
         }
       />

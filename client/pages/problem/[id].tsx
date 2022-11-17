@@ -11,31 +11,30 @@ const ProblemContainer = dynamic(
   { ssr: false },
 );
 
-const problemDetailStyle = css`
-  display: flex;
-  height: calc(100% - 70px);
-  width: 100%;
-`;
+const style = {
+  problemDetail: css`
+    display: flex;
+    height: calc(100% - 70px);
+    width: 100%;
+  `,
+  problemViewer: css`
+    height: 100%;
+    width: 50%;
+    border-right: 1px solid #3949ab;
+  `,
+  codeContainer: css`
+    height: calc(100% - 50px);
+    width: 100%;
+    border-bottom: 1px solid #3949ab;
+  `,
+  controlPanel: css`
+    height: 49px;
 
-const problemViewerStyle = css`
-  height: 100%;
-  width: 50%;
-  border-right: 1px solid #3949ab;
-`;
-
-const codeContainerStyle = css`
-  height: calc(100% - 50px);
-  width: 100%;
-  border-bottom: 1px solid #3949ab;
-`;
-
-const controlPanelStyle = css`
-  height: 49px;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  `,
+};
 
 function ProblemDetail() {
   const router = useRouter();
@@ -66,8 +65,8 @@ function ProblemDetail() {
   };
 
   return (
-    <div css={problemDetailStyle}>
-      <div css={problemViewerStyle}>
+    <div css={style.problemDetail}>
+      <div css={style.problemViewer}>
         {problem && <ProblemContainer problem={problem} />}
       </div>
       <div
@@ -75,10 +74,10 @@ function ProblemDetail() {
           width: 50%;
         `}
       >
-        <div css={codeContainerStyle}>
+        <div css={style.codeContainer}>
           <CodeContainer setCode={setCode} />
         </div>
-        <div css={controlPanelStyle}>
+        <div css={style.controlPanel}>
           <Button onClick={handleSubmission}>제출</Button>
         </div>
       </div>

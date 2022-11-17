@@ -30,6 +30,7 @@ const style = {
     border-radius: 1rem;
     min-width: 400px;
     min-height: 350px;
+    padding: 5px 0px 5px 10px;
   `,
 };
 
