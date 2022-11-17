@@ -23,11 +23,29 @@ export default async function handler(
       _page * limit,
     );
 
+    console.log(problems);
+
     res.status(200).json({
       pageCount: pageCount,
       problems: currentPageProblems,
       currentPage: currentPage,
     });
+  } else if (req.method === 'POST') {
+    const body = req.body;
+    const newProblem = {
+      id: problems[0].id + 1,
+      datetime: new Date().getTime(),
+      rate:
+        Math.floor(Math.random() * 100) + Math.floor(Math.random() * 10) / 10,
+      visible: false,
+      ...body,
+    };
+    problems.splice(0, 0, newProblem);
+
+    console.log(newProblem);
+    console.log(problems);
+
+    res.status(201).json({});
   } else {
     res.status(404);
   }
