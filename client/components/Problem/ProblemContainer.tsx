@@ -1,61 +1,92 @@
 import { css } from '@emotion/react';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { Viewer } from '@toast-ui/react-editor';
 
 interface ProblemContainerProps {
   problem: Problem;
 }
 
-const limitStyle = css`
-  width: 100%;
+const style = {
+  limit: css`
+    width: 100%;
 
-  display: flex;
-  justify-content: flex-start;
+    display: flex;
+    justify-content: flex-start;
 
-  & > span {
-    font-weight: bold;
-    margin-right: 10px;
-  }
-`;
-
-const problemContainerStyle = css`
-  margin-left: 10px;
-  overflow: auto;
-  height: 100%;
-`;
+    & > span {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  `,
+  problemContainer: css`
+    margin-left: 10px;
+    overflow: auto;
+    height: calc(100% - 96px);
+  `,
+  header: css`
+    padding: 0 10px;
+    padding-bottom: 15px;
+  `,
+  h2: css`
+    margin: 15px 0;
+  `,
+  h3: css`
+    color: #00227b;
+  `,
+  exampleContainer: css`
+    display: flex;
+  `,
+  example: css`
+    width: 50%;
+  `,
+  exampleText: css`
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-right: 25px;
+    padding: 5px;
+    border-radius: 5px;
+  `,
+};
 
 function ProblemContainer({ problem }: ProblemContainerProps) {
   return (
-    <div css={problemContainerStyle}>
-      <h2>
-        {problem.id}번 - {problem.title}
-      </h2>
+    <>
+      <header css={style.header}>
+        <h2 css={style.h2}>
+          {problem.id}번 - {problem.title}
+        </h2>
+        <div css={style.limit}>
+          <span>시간제한 {problem.timeLimit}ms</span>
+          <span>메모리 제한 {problem.memoryLimit}MB</span>
+        </div>
+      </header>
+      <main css={style.problemContainer}>
+        <h3 css={style.h3}>문제</h3>
+        <Viewer initialValue={problem.content} />
+        <h3 css={style.h3}>입력</h3>
+        <Viewer initialValue={problem.io.input} />
+        <h3 css={style.h3}>출력</h3>
+        <Viewer initialValue={problem.io.output} />
+        <h3 css={style.h3}>제한</h3>
+        <Viewer initialValue={problem.limitExplain} />
 
-      <div css={limitStyle}>
-        <span>시간제한 {problem.timeLimit}ms</span>
-        <span>메모리 제한 {problem.memoryLimit}MB</span>
-      </div>
-
-      <h3>문제</h3>
-      {problem.content}
-      <h3>입력</h3>
-      {problem.io.input}
-      <h3>출력</h3>
-      {problem.io.output}
-      <h3>제한</h3>
-      {problem.limitExplain}
-
-      {problem.ioExample.map(({ input, output }, idx) => {
-        return (
-          <div key={idx}>
-            <h3>예제 입력 {idx + 1}</h3>
-            {input}
-            <h3>예제 출력 {idx + 1}</h3>
-            {output}
-          </div>
-        );
-      })}
-      <h3>입출력 예제 설명</h3>
-      {problem.ioExplain}
-    </div>
+        {problem.ioExample.map(({ input, output }, idx) => {
+          return (
+            <div css={style.exampleContainer} key={idx}>
+              <div css={style.example}>
+                <h3 css={style.h3}>예제 입력 {idx + 1}</h3>
+                <div css={style.exampleText}>{input}</div>
+              </div>
+              <div css={style.example}>
+                <h3 css={style.h3}>예제 출력 {idx + 1}</h3>
+                <div css={style.exampleText}>{output}</div>
+              </div>
+            </div>
+          );
+        })}
+        <h3 css={style.h3}>입출력 예제 설명</h3>
+        <Viewer initialValue={problem.ioExplain} />
+      </main>
+    </>
   );
 }
 

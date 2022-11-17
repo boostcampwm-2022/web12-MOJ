@@ -18,8 +18,8 @@ const style = {
   removeBtn: css`
     height: 32px;
     width: 32px;
-    margin-top: 35px;
     margin-right: 8px;
+    padding-top: 29px;
     border-radius: 50%;
   `,
 };
@@ -37,6 +37,7 @@ function Row({ value, setValue, index, onDelete }: RowProps) {
     <div
       css={css`
         display: flex;
+        align-items: center;
       `}
     >
       <InputContainer
