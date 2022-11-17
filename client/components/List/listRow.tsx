@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
-import { MouseEventHandler, ReactNode } from 'react';
+import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
 
 interface ListMapper<T> {
   path: undefined | keyof T;
@@ -12,7 +12,7 @@ interface ListMapper<T> {
   };
   weight: number;
   format?: (value: any) => ReactNode;
-  onclick?: MouseEventHandler;
+  onclick?: (e: MouseEvent, row: T) => void;
 }
 
 interface ListRowProps<T> {
@@ -77,7 +77,9 @@ function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
                   get(_style?.all, row),
                   get(_style?.row, row),
                 ]}
-                onClick={onclick}
+                onClick={
+                  onclick ? (e: MouseEvent) => onclick(e, row) : undefined
+                }
               >
                 {
                   format

@@ -1,7 +1,7 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Paginator from './paginator';
 import ListRow from './listRow';
-import { MouseEventHandler, ReactNode } from 'react';
+import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
 
 interface ListMapper<T> {
   path: undefined | keyof T;
@@ -13,7 +13,7 @@ interface ListMapper<T> {
   };
   weight: number;
   format?: (value: any) => ReactNode;
-  onclick?: MouseEventHandler;
+  onclick?: (e: MouseEvent, row: T) => void;
 }
 
 interface ListProps<T> {
