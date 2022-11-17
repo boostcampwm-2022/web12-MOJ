@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
 import CodeContainer from '../../components/Problem/CodeContainer';
+
 import dynamic from 'next/dynamic';
 
 const ProblemContainer = dynamic(
