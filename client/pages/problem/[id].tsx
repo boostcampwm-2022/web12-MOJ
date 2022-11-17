@@ -4,7 +4,12 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
 import CodeContainer from '../../components/Problem/CodeContainer';
-import ProblemContainer from '../../components/Problem/ProblemContainer';
+import dynamic from 'next/dynamic';
+
+const ProblemContainer = dynamic(
+  () => import('../../components/Problem/ProblemContainer'),
+  { ssr: false },
+);
 
 export const problemDetailStyle = css`
   display: flex;

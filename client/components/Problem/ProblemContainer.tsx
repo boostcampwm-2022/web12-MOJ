@@ -1,4 +1,6 @@
 import { css } from '@emotion/react';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { Viewer } from '@toast-ui/react-editor';
 
 interface ProblemContainerProps {
   problem: Problem;
@@ -35,13 +37,13 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
       </div>
 
       <h3>문제</h3>
-      {problem.content}
+      <Viewer initialValue={problem.content} />
       <h3>입력</h3>
-      {problem.io.input}
+      <Viewer initialValue={problem.io.input} />
       <h3>출력</h3>
-      {problem.io.output}
+      <Viewer initialValue={problem.io.output} />
       <h3>제한</h3>
-      {problem.limitExplain}
+      <Viewer initialValue={problem.limitExplain} />
 
       {problem.ioExample.map(({ input, output }, idx) => {
         return (
@@ -54,7 +56,7 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
         );
       })}
       <h3>입출력 예제 설명</h3>
-      {problem.ioExplain}
+      <Viewer initialValue={problem.ioExplain} />
     </div>
   );
 }
