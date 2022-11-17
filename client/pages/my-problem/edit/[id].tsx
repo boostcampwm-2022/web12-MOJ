@@ -108,7 +108,7 @@ function NewMyProblem() {
 
   return (
     <div css={style.container}>
-      <div css={style.title}>문제 추가</div>
+      <div css={style.title}>문제 편집</div>
       <div css={style.labelWrapper}>
         <div css={style.flexWeight(4)}>
           <div css={style.label}>제목</div>
