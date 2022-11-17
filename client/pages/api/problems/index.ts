@@ -23,8 +23,6 @@ export default async function handler(
       _page * limit,
     );
 
-    console.log(problems);
-
     res.status(200).json({
       pageCount: pageCount,
       problems: currentPageProblems,
@@ -41,9 +39,6 @@ export default async function handler(
       ...body,
     };
     problems.splice(0, 0, newProblem);
-
-    console.log(newProblem);
-    console.log(problems);
 
     res.status(201).json({});
   } else {

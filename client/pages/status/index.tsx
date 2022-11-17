@@ -7,6 +7,7 @@ import { css } from '@emotion/react';
 const style = {
   container: css`
     margin: 64px 20%;
+    padding-bottom: 64px;
   `,
   title: css`
     font-size: 32px;
