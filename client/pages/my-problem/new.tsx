@@ -6,6 +6,7 @@ import React, { forwardRef } from 'react';
 import Button from '../../components/common/Button';
 import Router from 'next/router';
 import axiosInstance from '../../axios';
+import IOList, { useIOList } from '../../components/common/IOList';
 
 const WrappedEditor = dynamic(
   () => import('../../components/Editor/wrapperEditor'),
@@ -52,6 +53,11 @@ const style = {
   flexWeight: (weight: number) => css`
     flex: ${weight};
   `,
+  addBtn: css`
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+  `,
 };
 
 function NewMyProblem() {
@@ -64,7 +70,11 @@ function NewMyProblem() {
   const [title, setTitle] = React.useState<string>('');
   const [timeLimit, setTimeLimit] = React.useState<number>(100);
 
-  console.log(title, timeLimit);
+  const [examples, setExamples] = useIOList();
+
+  const handleAddClick = () => {
+    setExamples((array) => [...array, { input: '', output: '' }]);
+  };
 
   return (
     <div css={style.container}>
@@ -104,6 +114,20 @@ function NewMyProblem() {
       <EditorWithForwardedRef ref={outputEditorRef} />
       <div css={style.label}>제한</div>
       <EditorWithForwardedRef ref={limitEditorRef} />
+      <div css={style.addBtn}>
+        <Button onClick={handleAddClick}>+ 예제 추가</Button>
+      </div>
+
+      <div
+        css={css`
+          & > div {
+            border: none;
+            min-height: 0;
+          }
+        `}
+      >
+        <IOList arr={examples} setArr={setExamples} />
+      </div>
       <div css={style.label}>예제 설명</div>
       <EditorWithForwardedRef ref={exampleEditorRef} />
       <div
@@ -131,6 +155,7 @@ function NewMyProblem() {
               output: outputEditorRef.current?.getInstance().getMarkdown(),
               limit: limitEditorRef.current?.getInstance().getMarkdown(),
               example: exampleEditorRef.current?.getInstance().getMarkdown(),
+              examples: examples,
             });
             if (result.status === 201) {
               Router.push('/my-problem');
