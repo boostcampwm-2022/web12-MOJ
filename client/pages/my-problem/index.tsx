@@ -16,6 +16,7 @@ import Link from 'next/link';
 const style = {
   container: css`
     margin: 64px 20%;
+    padding-bottom: 64px;
     position: relative;
   `,
   title: css`
