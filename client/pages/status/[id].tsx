@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
@@ -6,6 +5,7 @@ import { css } from '@emotion/react';
 import Editor from '@monaco-editor/react';
 import StatusList from '../../components/status/StatusList';
 import style from '../../styles/style';
+import axiosInstance from '../../axios';
 
 function StatusDetail() {
   const router = useRouter();
@@ -15,7 +15,9 @@ function StatusDetail() {
 
   useEffect(() => {
     (async () => {
-      const res = await (await axios.get(`/api/submissions/${id}`)).data;
+      const res = await (
+        await axiosInstance.get(`/api/submissions/${id}`)
+      ).data;
       setCode(res.code);
       setStatus(res.status);
     })();

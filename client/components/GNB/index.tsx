@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
+import axiosInstance from '../../axios';
 import Logo from './Logo';
 import Menu from './Menu';
 import UserInfo from './UserInfo';
@@ -22,7 +22,7 @@ function GNB() {
   useEffect(() => {
     (async () => {
       try {
-        const result = (await axios('/api/user/login-status')).data;
+        const result = (await axiosInstance('/api/user/login-status')).data;
         setLoggedIn(true);
         setUserName(result.userName);
       } catch (error) {

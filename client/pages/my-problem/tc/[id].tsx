@@ -1,7 +1,6 @@
-import { css } from '@emotion/react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import axiosInstance from '../../../axios';
 import Button from '../../../components/common/Button';
 import IOList, { useIOList } from '../../../components/common/IOList';
 import style from '../../../styles/style';
@@ -17,7 +16,9 @@ function Testcase() {
 
     (async () => {
       try {
-        const result = await (await axios(`/api/problems/${id}/tc`)).data;
+        const result = await (
+          await axiosInstance(`/api/problems/${id}/tc`)
+        ).data;
         setTitle(result.title);
         setTestCase(result.data);
       } catch (err) {
@@ -38,7 +39,7 @@ function Testcase() {
           throw new Error('빈칸..');
         }
       });
-      await axios.post(`/api/problems/${id}/tc`, testcase);
+      await axiosInstance.post(`/api/problems/${id}/tc`, testcase);
       router.push('/my-problem');
     } catch (err) {
       console.error(err);

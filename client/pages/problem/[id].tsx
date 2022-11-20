@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
@@ -7,6 +6,7 @@ import CodeContainer from '../../components/Problem/CodeContainer';
 import style from '../../styles/style';
 
 import dynamic from 'next/dynamic';
+import axiosInstance from '../../axios';
 
 const ProblemContainer = dynamic(
   () => import('../../components/Problem/ProblemContainer'),
@@ -24,7 +24,7 @@ function ProblemDetail() {
 
     (async () => {
       try {
-        const result = await (await axios(`/api/problems/${id}`)).data;
+        const result = await (await axiosInstance(`/api/problems/${id}`)).data;
         setProblem(result);
       } catch (err) {
         console.error(err);
@@ -34,7 +34,7 @@ function ProblemDetail() {
 
   const handleSubmission = async () => {
     try {
-      await axios.post(`/api/problems/${id}/submissions`, { code });
+      await axiosInstance.post(`/api/problems/${id}/submissions`, { code });
       router.push('/status');
     } catch (error) {
       console.error(error);
