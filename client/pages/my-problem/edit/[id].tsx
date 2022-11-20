@@ -7,6 +7,7 @@ import Button from '../../../components/common/Button';
 import Router, { useRouter } from 'next/router';
 import axiosInstance from '../../../axios';
 import IOList, { useIOList } from '../../../components/common/IOList';
+import style from '../../../styles/style';
 
 const WrappedEditor = dynamic(
   () => import('../../../components/Editor/wrapperEditor'),
@@ -20,46 +21,6 @@ const EditorWithForwardedRef = React.forwardRef(
     <WrappedEditor {...props} forwardedRef={ref} />
   ),
 );
-
-const style = {
-  container: css`
-    margin: 64px 20%;
-    padding-bottom: 64px;
-  `,
-  title: css`
-    font-size: 32px;
-    font-weight: bold;
-    margin: 42px 0;
-  `,
-  labelWrapper: css`
-    display: flex;
-    gap: 24px;
-    margin: 12px 0;
-  `,
-  label: css`
-    font-size: 18px;
-    font-weight: bold;
-    color: #000000;
-    margin: 12px 0;
-  `,
-  input: css`
-    all: unset;
-    width: 100%;
-    box-sizing: border-box;
-    background: rgba(217, 217, 217, 0.2);
-    border-radius: 10px;
-    padding: 7px 16px;
-    font-size: 14px;
-  `,
-  flexWeight: (weight: number) => css`
-    flex: ${weight};
-  `,
-  addBtn: css`
-    margin-top: 30px;
-    display: flex;
-    justify-content: flex-end;
-  `,
-};
 
 function NewMyProblem() {
   const contentEditorRef = React.useRef<Editor>(null);
@@ -75,6 +36,32 @@ function NewMyProblem() {
 
   const handleAddClick = () => {
     setExamples((array) => [...array, { input: '', output: '' }]);
+  };
+
+  const handleSubmit = async () => {
+    const id = router.query.id;
+
+    let _id = 1;
+    if (!id) _id = 1;
+    else if (Array.isArray(id)) _id = 1;
+    else _id = +id;
+
+    const result = await axiosInstance.put(`/api/problems/${_id}`, {
+      title: title,
+      timeLimit: timeLimit,
+      memoryLimit: 512,
+      content: contentEditorRef.current?.getInstance().getMarkdown(),
+      input: inputEditorRef.current?.getInstance().getMarkdown(),
+      output: outputEditorRef.current?.getInstance().getMarkdown(),
+      limit: limitEditorRef.current?.getInstance().getMarkdown(),
+      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      examples: examples,
+    });
+    if (result.status === 200) {
+      Router.push('/my-problem');
+    } else {
+      // 에러처리
+    }
   };
 
   const router = useRouter();
@@ -107,7 +94,7 @@ function NewMyProblem() {
   }, [router.isReady, router.query.id]);
 
   return (
-    <div css={style.container}>
+    <div css={style.relativeContainer}>
       <div css={style.title}>문제 편집</div>
       <div css={style.labelWrapper}>
         <div css={style.flexWeight(4)}>
@@ -145,7 +132,9 @@ function NewMyProblem() {
       <div css={style.label}>제한</div>
       <EditorWithForwardedRef ref={limitEditorRef} />
       <div css={style.addBtn}>
-        <Button onClick={handleAddClick}>+ 예제 추가</Button>
+        <Button minWidth="60px" onClick={handleAddClick}>
+          + 예제 추가
+        </Button>
       </div>
 
       <div
@@ -160,47 +149,17 @@ function NewMyProblem() {
       </div>
       <div css={style.label}>예제 설명</div>
       <EditorWithForwardedRef ref={exampleEditorRef} />
-      <div
-        css={css`
-          display: flex;
-          justify-content: flex-end;
-          margin: 20px 0;
-        `}
-      >
+      <div css={style.footer}>
         <Button
+          style="cancel"
+          minWidth="60px"
           onClick={() => {
             Router.back();
           }}
         >
           취소
         </Button>
-        <Button
-          onClick={async () => {
-            const id = router.query.id;
-
-            let _id = 1;
-            if (!id) _id = 1;
-            else if (Array.isArray(id)) _id = 1;
-            else _id = +id;
-
-            const result = await axiosInstance.put(`/api/problems/${_id}`, {
-              title: title,
-              timeLimit: timeLimit,
-              memoryLimit: 512,
-              content: contentEditorRef.current?.getInstance().getMarkdown(),
-              input: inputEditorRef.current?.getInstance().getMarkdown(),
-              output: outputEditorRef.current?.getInstance().getMarkdown(),
-              limit: limitEditorRef.current?.getInstance().getMarkdown(),
-              example: exampleEditorRef.current?.getInstance().getMarkdown(),
-              examples: examples,
-            });
-            if (result.status === 200) {
-              Router.push('/my-problem');
-            } else {
-              // 에러처리
-            }
-          }}
-        >
+        <Button minWidth="60px" onClick={handleSubmit}>
           저장
         </Button>
       </div>

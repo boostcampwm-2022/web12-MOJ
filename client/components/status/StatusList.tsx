@@ -5,19 +5,11 @@ interface StatusListProps {
   status: StatusSummary;
 }
 
-interface StatusSummary {
-  id: number;
-  user: string;
-  title: string;
-  result: number;
-  time: string;
-  datetime: number;
-}
-
 function StatusList({ status }: StatusListProps) {
   return (
     <>
       <List
+        isShowPaginator={false}
         pageCount={1}
         currentPage={1}
         data={[status]}

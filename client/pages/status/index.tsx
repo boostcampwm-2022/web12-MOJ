@@ -3,33 +3,7 @@ import { useRouter } from 'next/router';
 import axiosInstance from '../../axios';
 import List from '../../components/List';
 import { css } from '@emotion/react';
-
-const style = {
-  container: css`
-    margin: 64px 20%;
-    padding-bottom: 64px;
-  `,
-  title: css`
-    font-size: 32px;
-    font-weight: bold;
-    margin: 42px 12px;
-  `,
-};
-
-interface StatusSummary {
-  id: number;
-  user: string;
-  title: string;
-  result: number;
-  time: string;
-  datetime: number;
-}
-
-interface StatusListResponseData {
-  pageCount: number;
-  currentPage: number;
-  status: StatusSummary[];
-}
+import style from '../../styles/style';
 
 function status() {
   const router = useRouter();
@@ -59,8 +33,8 @@ function status() {
   }, [router.isReady, router.query.page]);
 
   return (
-    <div css={style.container}>
-      <div css={style.title}>문제 목록</div>
+    <div css={style.relativeContainer}>
+      <div css={style.title}>채점 현황</div>
       {status === null ? (
         <div>로딩중</div>
       ) : (

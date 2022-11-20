@@ -3,30 +3,7 @@ import { css } from '@emotion/react';
 import axiosInstance from '../axios';
 import { useRouter } from 'next/router';
 import List from '../components/List';
-
-const style = {
-  container: css`
-    margin: 64px 20%;
-    padding-bottom: 64px;
-  `,
-  title: css`
-    font-size: 32px;
-    font-weight: bold;
-    margin: 42px 12px;
-  `,
-};
-
-interface ProblemSummary {
-  id: number;
-  title: string;
-  rate: number;
-}
-
-interface ProblemListResponseData {
-  pageCount: number;
-  currentPage: number;
-  problems: ProblemSummary[];
-}
+import style from '../styles/style';
 
 function Home() {
   const router = useRouter();
@@ -53,7 +30,7 @@ function Home() {
   }, [router.isReady, router.query.page]);
 
   return (
-    <div css={style.container}>
+    <div css={style.relativeContainer}>
       <div css={style.title}>문제 목록</div>
       {problems === null ? (
         <div>로딩중</div>

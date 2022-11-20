@@ -7,11 +7,6 @@ interface IOListProps {
   setArr: Dispatch<SetStateAction<IO[]>>;
 }
 
-interface IO {
-  input: string;
-  output: string;
-}
-
 export function useIOList(): [IO[], Dispatch<SetStateAction<IO[]>>] {
   const [arr, setArr] = useState<Array<IO>>([{ input: '', output: '' }]);
 

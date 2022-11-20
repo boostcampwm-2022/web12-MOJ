@@ -2,19 +2,6 @@ import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
 import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
 
-interface ListMapper<T> {
-  path: undefined | keyof T;
-  name: string;
-  style?: {
-    head?: SerializedStyles;
-    row?: ((row: T) => SerializedStyles) | SerializedStyles;
-    all?: SerializedStyles;
-  };
-  weight: number;
-  format?: (value: any) => ReactNode;
-  onclick?: (e: MouseEvent, row: T) => void;
-}
-
 interface ListRowProps<T> {
   row: T;
 

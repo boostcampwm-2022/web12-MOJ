@@ -3,10 +3,6 @@ import InputContainer from './InputContainer';
 import { css } from '@emotion/react';
 import RemoveRowSvg from '../../svgs/removeRow';
 
-interface IO {
-  input: string;
-  output: string;
-}
 interface RowProps {
   value: IO;
   setValue: (value: IO) => void;

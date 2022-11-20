@@ -7,16 +7,15 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Global
         styles={css`
-          body {
+          body,
+          html {
             margin: 0;
+            // 너 고정.
+            height: 100%;
           }
-          
+
           #__next {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            height: 100%;
           }
         `}
       />

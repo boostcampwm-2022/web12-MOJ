@@ -14,7 +14,14 @@ const WrappedEditor = (
       usageStatistics={false}
       previewStyle="vertical"
       height="400px"
-      initialEditType="wysiwyg"
+      toolbarItems={[
+        ['heading', 'bold', 'italic', 'strike'],
+        ['hr', 'quote'],
+        ['ul', 'ol', 'indent', 'outdent'],
+        ['table', 'link'],
+        ['code', 'codeblock'],
+      ]}
+      initialEditType="markdown"
     />
   );
 };
