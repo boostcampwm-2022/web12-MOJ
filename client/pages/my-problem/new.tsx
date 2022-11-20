@@ -113,6 +113,7 @@ function NewMyProblem() {
       </div>
       <div css={style.label}>예제 설명</div>
       <EditorWithForwardedRef ref={exampleEditorRef} />
+
       <div css={style.footer}>
         <Button
           style="cancel"

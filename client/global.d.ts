@@ -73,3 +73,4 @@ interface StatusSummary {
   time: string;
   datetime: number;
 }
+

@@ -10,6 +10,17 @@ import { style, modal } from '../../styles';
 import Modal from '../../components/Modal';
 import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
 
+
+interface ModalCloseState {
+  isShowModal: false;
+}
+
+interface ModalOpenstate {
+  isShowModal: true;
+  title: string;
+  id: number;
+}
+
 function MyProblem() {
   const router = useRouter();
 
@@ -57,7 +68,7 @@ function MyProblem() {
     if (!router.isReady) return;
 
     const page = router.query.page;
-
+    
     let _page = 1;
     if (!page) _page = 1;
     else if (Array.isArray(page)) _page = 1;
@@ -95,6 +106,7 @@ function MyProblem() {
           >
             + 추가
           </Button>
+
         </div>
         {myProblems === null ? (
           <div>로딩중</div>
@@ -162,7 +174,7 @@ function MyProblem() {
                   },
                   onclick: (e, row: MyProblemSummary) => {
                     e.preventDefault();
-
+                    
                     setModalData({
                       title: row.title,
                       id: row.id,
