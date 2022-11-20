@@ -7,15 +7,6 @@ import Editor from '@monaco-editor/react';
 import StatusList from '../../components/status/StatusList';
 import style from '../../styles/style';
 
-interface StatusSummary {
-  id: number;
-  user: string;
-  title: string;
-  result: number;
-  time: string;
-  datetime: number;
-}
-
 function StatusDetail() {
   const router = useRouter();
   const { id } = router.query;

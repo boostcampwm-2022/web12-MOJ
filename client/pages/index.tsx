@@ -5,18 +5,6 @@ import { useRouter } from 'next/router';
 import List from '../components/List';
 import style from '../styles/style';
 
-interface ProblemSummary {
-  id: number;
-  title: string;
-  rate: number;
-}
-
-interface ProblemListResponseData {
-  pageCount: number;
-  currentPage: number;
-  problems: ProblemSummary[];
-}
-
 function Home() {
   const router = useRouter();
 

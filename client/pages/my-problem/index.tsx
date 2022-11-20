@@ -15,19 +15,6 @@ import Link from 'next/link';
 import style from '../../styles/style';
 import modal from '../../styles/modal';
 
-interface MyProblemSummary {
-  id: number;
-  title: string;
-  datetime: number;
-  visible: number;
-}
-
-interface StatusListResponseData {
-  pageCount: number;
-  currentPage: number;
-  problems: MyProblemSummary[];
-}
-
 interface ModalCloseState {
   isShowModal: false;
 }
@@ -42,7 +29,7 @@ function MyProblem() {
   const router = useRouter();
 
   const [myProblems, setMyProblems] =
-    React.useState<StatusListResponseData | null>(null);
+    React.useState<MyProblemListResponseData | null>(null);
 
   const [isShowModal, setIsShowModal] = React.useState<
     ModalCloseState | ModalOpenstate

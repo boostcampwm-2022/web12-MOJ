@@ -5,21 +5,6 @@ import List from '../../components/List';
 import { css } from '@emotion/react';
 import style from '../../styles/style';
 
-interface StatusSummary {
-  id: number;
-  user: string;
-  title: string;
-  result: number;
-  time: string;
-  datetime: number;
-}
-
-interface StatusListResponseData {
-  pageCount: number;
-  currentPage: number;
-  status: StatusSummary[];
-}
-
 function status() {
   const router = useRouter();
 

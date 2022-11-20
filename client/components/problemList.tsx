@@ -31,12 +31,6 @@ const style = {
   `,
 };
 
-interface ProblemSummary {
-  id: number;
-  title: string;
-  rate: number;
-}
-
 interface ProblemListProps {
   pageCount: number;
   currentPage: number;
