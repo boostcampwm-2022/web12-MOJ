@@ -5,18 +5,7 @@ import Button from '../../components/common/Button';
 import { css } from '@emotion/react';
 import Editor from '@monaco-editor/react';
 import StatusList from '../../components/status/StatusList';
-
-const style = {
-  container: css`
-    margin: 64px 20%;
-    height: 80vh;
-  `,
-  title: css`
-    font-size: 32px;
-    font-weight: bold;
-    margin: 42px 12px;
-  `,
-};
+import style from '../../styles/style';
 
 interface StatusSummary {
   id: number;
@@ -49,15 +38,7 @@ function StatusDetail() {
       ) : (
         <>
           <StatusList status={status} />
-          <div
-            css={css`
-              height: 80%;
-              padding: 15px 0;
-              border-radius: 8px;
-              margin-top: 15px;
-              box-shadow: 0px 0px 1.5px 1.5px rgba(0, 0, 0, 0.15);
-            `}
-          >
+          <div css={style.codeBox}>
             <Editor
               defaultLanguage="python"
               defaultValue={code}
@@ -76,14 +57,7 @@ function StatusDetail() {
           </div>
         </>
       )}
-      <div
-        css={css`
-          display: flex;
-          justify-content: flex-end;
-          padding: 10px 1px;
-          width: 100%;
-        `}
-      >
+      <div css={style.footer}>
         <Button>복사</Button>
       </div>
     </div>

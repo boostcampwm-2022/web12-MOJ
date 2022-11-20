@@ -4,34 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../../components/common/Button';
 import IOList, { useIOList } from '../../../components/common/IOList';
-
-const style = {
-  container: css`
-    margin: 64px 20%;
-  `,
-  title: css`
-    font-size: 32px;
-    font-weight: bold;
-    margin: 42px 12px;
-  `,
-  header: css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  `,
-  titleContainer: css`
-    display: flex;
-    align-items: center;
-  `,
-  problemTitle: css`
-    color: #3949ab;
-  `,
-  footer: css`
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px 0px;
-  `,
-};
+import style from '../../../styles/style';
 
 function Testcase() {
   const router = useRouter();

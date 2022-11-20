@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
 import CodeContainer from '../../components/Problem/CodeContainer';
+import style from '../../styles/style';
 
 import dynamic from 'next/dynamic';
 
@@ -11,31 +12,6 @@ const ProblemContainer = dynamic(
   () => import('../../components/Problem/ProblemContainer'),
   { ssr: false },
 );
-
-const style = {
-  problemDetail: css`
-    display: flex;
-    height: calc(100% - 70px);
-    width: 100%;
-  `,
-  problemViewer: css`
-    height: 100%;
-    width: 50%;
-    border-right: 1px solid #3949ab;
-  `,
-  codeContainer: css`
-    height: calc(100% - 50px);
-    width: 100%;
-    border-bottom: 1px solid #3949ab;
-  `,
-  controlPanel: css`
-    height: 49px;
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  `,
-};
 
 function ProblemDetail() {
   const router = useRouter();
