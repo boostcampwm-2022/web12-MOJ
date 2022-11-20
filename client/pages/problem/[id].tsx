@@ -55,7 +55,9 @@ function ProblemDetail() {
           <CodeContainer setCode={setCode} />
         </div>
         <div css={style.controlPanel}>
-          <Button onClick={handleSubmission}>제출</Button>
+          <Button minWidth="60px" onClick={handleSubmission}>
+            제출
+          </Button>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ function StatusList({ status }: StatusListProps) {
   return (
     <>
       <List
+        isShowPaginator={false}
         pageCount={1}
         currentPage={1}
         data={[status]}

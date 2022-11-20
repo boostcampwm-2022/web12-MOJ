@@ -38,6 +38,32 @@ function NewMyProblem() {
     setExamples((array) => [...array, { input: '', output: '' }]);
   };
 
+  const handleSubmit = async () => {
+    const id = router.query.id;
+
+    let _id = 1;
+    if (!id) _id = 1;
+    else if (Array.isArray(id)) _id = 1;
+    else _id = +id;
+
+    const result = await axiosInstance.put(`/api/problems/${_id}`, {
+      title: title,
+      timeLimit: timeLimit,
+      memoryLimit: 512,
+      content: contentEditorRef.current?.getInstance().getMarkdown(),
+      input: inputEditorRef.current?.getInstance().getMarkdown(),
+      output: outputEditorRef.current?.getInstance().getMarkdown(),
+      limit: limitEditorRef.current?.getInstance().getMarkdown(),
+      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      examples: examples,
+    });
+    if (result.status === 200) {
+      Router.push('/my-problem');
+    } else {
+      // 에러처리
+    }
+  };
+
   const router = useRouter();
 
   React.useEffect(() => {
@@ -106,7 +132,9 @@ function NewMyProblem() {
       <div css={style.label}>제한</div>
       <EditorWithForwardedRef ref={limitEditorRef} />
       <div css={style.addBtn}>
-        <Button onClick={handleAddClick}>+ 예제 추가</Button>
+        <Button minWidth="60px" onClick={handleAddClick}>
+          + 예제 추가
+        </Button>
       </div>
 
       <div
@@ -123,39 +151,15 @@ function NewMyProblem() {
       <EditorWithForwardedRef ref={exampleEditorRef} />
       <div css={style.footer}>
         <Button
+          style="cancel"
+          minWidth="60px"
           onClick={() => {
             Router.back();
           }}
         >
           취소
         </Button>
-        <Button
-          onClick={async () => {
-            const id = router.query.id;
-
-            let _id = 1;
-            if (!id) _id = 1;
-            else if (Array.isArray(id)) _id = 1;
-            else _id = +id;
-
-            const result = await axiosInstance.put(`/api/problems/${_id}`, {
-              title: title,
-              timeLimit: timeLimit,
-              memoryLimit: 512,
-              content: contentEditorRef.current?.getInstance().getMarkdown(),
-              input: inputEditorRef.current?.getInstance().getMarkdown(),
-              output: outputEditorRef.current?.getInstance().getMarkdown(),
-              limit: limitEditorRef.current?.getInstance().getMarkdown(),
-              example: exampleEditorRef.current?.getInstance().getMarkdown(),
-              examples: examples,
-            });
-            if (result.status === 200) {
-              Router.push('/my-problem');
-            } else {
-              // 에러처리
-            }
-          }}
-        >
+        <Button minWidth="60px" onClick={handleSubmit}>
           저장
         </Button>
       </div>

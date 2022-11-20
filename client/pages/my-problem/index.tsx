@@ -48,6 +48,23 @@ function MyProblem() {
     return _page;
   }
 
+  const handleDelete = async () => {
+    if (!isShowModal.isShowModal) return;
+
+    const result = await axiosInstance.delete(
+      `/api/problems/${isShowModal.id}`,
+    );
+
+    if (result.status === 200) {
+      const page = getSafePage();
+      if (!page) return;
+      fetchMyProblemList(page);
+      setIsShowModal({ isShowModal: false });
+    } else {
+      // 에러처리
+    }
+  };
+
   async function fetchMyProblemList(page: number) {
     const { data } = await axiosInstance.get(`/api/problems?page=${page}`);
 
@@ -93,26 +110,13 @@ function MyProblem() {
                 </div>
                 <div css={modal.modalActionButtonContainer}>
                   <Button
+                    style="cancel"
+                    minWidth="60px"
                     onClick={() => setIsShowModal({ isShowModal: false })}
                   >
                     취소
                   </Button>
-                  <Button
-                    onClick={async () => {
-                      const result = await axiosInstance.delete(
-                        `/api/problems/${isShowModal.id}`,
-                      );
-
-                      if (result.status === 200) {
-                        const page = getSafePage();
-                        if (!page) return;
-                        fetchMyProblemList(page);
-                        setIsShowModal({ isShowModal: false });
-                      } else {
-                        // 에러처리
-                      }
-                    }}
-                  >
+                  <Button minWidth="60px" onClick={handleDelete}>
                     삭제
                   </Button>
                 </div>
@@ -124,7 +128,12 @@ function MyProblem() {
       <div css={style.relativeContainer}>
         <div css={style.header}>
           <div css={style.title}>출제 리스트</div>
-          <Button onClick={() => Router.push('/my-problem/new')}>+ 추가</Button>
+          <Button
+            minWidth="60px"
+            onClick={() => Router.push('/my-problem/new')}
+          >
+            + 추가
+          </Button>
         </div>
         {myProblems === null ? (
           <div>로딩중</div>

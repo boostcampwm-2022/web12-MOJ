@@ -38,6 +38,25 @@ function NewMyProblem() {
     setExamples((array) => [...array, { input: '', output: '' }]);
   };
 
+  const handleSubmit = async () => {
+    const result = await axiosInstance.post('/api/problems', {
+      title: title,
+      timeLimit: timeLimit,
+      memoryLimit: 512,
+      content: contentEditorRef.current?.getInstance().getMarkdown(),
+      input: inputEditorRef.current?.getInstance().getMarkdown(),
+      output: outputEditorRef.current?.getInstance().getMarkdown(),
+      limit: limitEditorRef.current?.getInstance().getMarkdown(),
+      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      examples: examples,
+    });
+    if (result.status === 201) {
+      Router.push('/my-problem');
+    } else {
+      // 에러처리
+    }
+  };
+
   return (
     <div css={style.relativeContainer}>
       <div css={style.title}>문제 추가</div>
@@ -77,7 +96,9 @@ function NewMyProblem() {
       <div css={style.label}>제한</div>
       <EditorWithForwardedRef ref={limitEditorRef} />
       <div css={style.addBtn}>
-        <Button onClick={handleAddClick}>+ 예제 추가</Button>
+        <Button minWidth="60px" onClick={handleAddClick}>
+          + 예제 추가
+        </Button>
       </div>
 
       <div
@@ -94,32 +115,15 @@ function NewMyProblem() {
       <EditorWithForwardedRef ref={exampleEditorRef} />
       <div css={style.footer}>
         <Button
+          style="cancel"
+          minWidth="60px"
           onClick={() => {
             Router.back();
           }}
         >
           취소
         </Button>
-        <Button
-          onClick={async () => {
-            const result = await axiosInstance.post('/api/problems', {
-              title: title,
-              timeLimit: timeLimit,
-              memoryLimit: 512,
-              content: contentEditorRef.current?.getInstance().getMarkdown(),
-              input: inputEditorRef.current?.getInstance().getMarkdown(),
-              output: outputEditorRef.current?.getInstance().getMarkdown(),
-              limit: limitEditorRef.current?.getInstance().getMarkdown(),
-              example: exampleEditorRef.current?.getInstance().getMarkdown(),
-              examples: examples,
-            });
-            if (result.status === 201) {
-              Router.push('/my-problem');
-            } else {
-              // 에러처리
-            }
-          }}
-        >
+        <Button minWidth="60px" onClick={handleSubmit}>
           저장
         </Button>
       </div>

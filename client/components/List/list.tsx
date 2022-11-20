@@ -11,6 +11,8 @@ interface ListProps<T> {
 
   mapper: ListMapper<T>[];
 
+  isShowPaginator?: boolean;
+
   rowHref: (row: T) => string;
   pageHref: (page: number) => string;
 }
@@ -64,6 +66,7 @@ function List<T>({
   mapper,
   rowHref,
   pageHref,
+  isShowPaginator,
 }: ListProps<T>) {
   return (
     <div css={style.container}>
@@ -85,11 +88,13 @@ function List<T>({
       {data.map((row, index) => (
         <ListRow key={index} row={row} rowHref={rowHref} mapper={mapper} />
       ))}
-      <Paginator
-        pageCount={pageCount}
-        currentPage={currentPage}
-        href={pageHref}
-      />
+      {isShowPaginator === true || isShowPaginator === undefined ? (
+        <Paginator
+          pageCount={pageCount}
+          currentPage={currentPage}
+          href={pageHref}
+        />
+      ) : undefined}
     </div>
   );
 }
