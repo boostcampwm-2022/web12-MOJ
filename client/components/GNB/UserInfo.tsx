@@ -20,7 +20,7 @@ function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
   return (
     <div css={userInfoStyle}>
       <span css={userNameStyle}>{isLoggedIn ? userName : ''}</span>
-      <Button>{isLoggedIn ? '로그아웃' : '로그인'}</Button>
+      <Button minWidth="60px">{isLoggedIn ? '로그아웃' : '로그인'}</Button>
     </div>
   );
 }

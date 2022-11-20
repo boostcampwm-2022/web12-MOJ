@@ -3,37 +3,18 @@ import Router, { useRouter } from 'next/router';
 import axiosInstance from '../../axios';
 import List from '../../components/List';
 import Button from '../../components/common/Button';
-import { css, Global } from '@emotion/react';
-import {
-  AddFileSvg,
-  DeleteSvg,
-  EditSvg,
-  CloseSvg,
-} from '../../components/svgs';
-import Toggle from '../../components/svgs/toggle';
+import { css } from '@emotion/react';
+import { AddFileSvg, DeleteSvg, EditSvg, Toggle } from '../../components/svgs';
 import Link from 'next/link';
-import style from '../../styles/style';
-import modal from '../../styles/modal';
-
-interface ModalCloseState {
-  isShowModal: false;
-}
-
-interface ModalOpenstate {
-  isShowModal: true;
-  title: string;
-  id: number;
-}
+import { style, modal } from '../../styles';
+import Modal from '../../components/Modal';
+import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
 
 function MyProblem() {
   const router = useRouter();
 
   const [myProblems, setMyProblems] =
     React.useState<MyProblemListResponseData | null>(null);
-
-  const [isShowModal, setIsShowModal] = React.useState<
-    ModalCloseState | ModalOpenstate
-  >({ isShowModal: false });
 
   function getSafePage() {
     if (!router.isReady) return;
@@ -48,22 +29,23 @@ function MyProblem() {
     return _page;
   }
 
-  const handleDelete = async () => {
-    if (!isShowModal.isShowModal) return;
-
-    const result = await axiosInstance.delete(
-      `/api/problems/${isShowModal.id}`,
-    );
+  const handleDelete = async (id: number) => {
+    const result = await axiosInstance.delete(`/api/problems/${id}`);
 
     if (result.status === 200) {
       const page = getSafePage();
       if (!page) return;
       fetchMyProblemList(page);
-      setIsShowModal({ isShowModal: false });
     } else {
       // 에러처리
     }
   };
+
+  const [isShowModal, setIsShowModal] = React.useState<boolean>(false);
+  const [modalData, setModalData] = React.useState<{
+    id: number;
+    title: string;
+  }>({ id: 0, title: '' });
 
   async function fetchMyProblemList(page: number) {
     const { data } = await axiosInstance.get(`/api/problems?page=${page}`);
@@ -86,45 +68,24 @@ function MyProblem() {
 
   return (
     <>
-      {isShowModal.isShowModal ? (
-        <>
-          <Global
-            styles={css`
-              body {
-                overflow: hidden;
-              }
-            `}
+      <Modal<{
+        id: number;
+        title: string;
+      }>
+        isShow={isShowModal}
+        data={modalData}
+        setIsShowModal={setIsShowModal}
+        render={(data) => (
+          <DeleteProblemModal
+            {...data}
+            handleCancel={() => setIsShowModal(false)}
+            handleDelete={() => {
+              handleDelete(data.id);
+              setIsShowModal(false);
+            }}
           />
-          <div css={modal.modalDimmed}>
-            <div css={modal.modal}>
-              <div
-                css={modal.modalCloseButton}
-                onClick={() => setIsShowModal({ isShowModal: false })}
-              >
-                <CloseSvg />
-              </div>
-              <div css={modal.modalWrapper}>
-                <div css={modal.modalTitle}>{isShowModal.title}</div>
-                <div css={modal.modalContent}>
-                  문제를 정말 삭제하시겠습니까?
-                </div>
-                <div css={modal.modalActionButtonContainer}>
-                  <Button
-                    style="cancel"
-                    minWidth="60px"
-                    onClick={() => setIsShowModal({ isShowModal: false })}
-                  >
-                    취소
-                  </Button>
-                  <Button minWidth="60px" onClick={handleDelete}>
-                    삭제
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : undefined}
+        )}
+      />
       <div css={style.relativeContainer}>
         <div css={style.header}>
           <div css={style.title}>출제 리스트</div>
@@ -202,11 +163,11 @@ function MyProblem() {
                   onclick: (e, row: MyProblemSummary) => {
                     e.preventDefault();
 
-                    setIsShowModal({
-                      isShowModal: true,
+                    setModalData({
                       title: row.title,
                       id: row.id,
                     });
+                    setIsShowModal(true);
                   },
                   format: () => <DeleteSvg />,
                 },
