@@ -20,6 +20,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
         autoLoadEntities: true,
         synchronize: true,
         namingStrategy: new SnakeNamingStrategy(),
+        logging: ['query'],
       }),
       inject: [ConfigService],
     }),
