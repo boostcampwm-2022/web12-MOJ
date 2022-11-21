@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ProblemsModule } from './problems/problems.module';
+import { UsersModule } from './users/users.module';
+import { SubmissionsModule } from './submissions/submissions.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       }),
       inject: [ConfigService],
     }),
+    ProblemsModule,
+    UsersModule,
+    SubmissionsModule,
   ],
   controllers: [],
   providers: [],
