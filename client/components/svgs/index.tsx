@@ -4,3 +4,5 @@ export { default as AddFileSvg } from './add-file';
 export { default as ToggleSvg } from './toggle';
 export { default as RemoveRowSvg } from './removeRow';
 export { default as CloseSvg } from './close';
+export { default as Toggle } from './toggle';
+

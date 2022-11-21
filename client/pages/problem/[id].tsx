@@ -1,41 +1,17 @@
 import { css } from '@emotion/react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Button from '../../components/common/Button';
 import CodeContainer from '../../components/Problem/CodeContainer';
+import style from '../../styles/style';
 
 import dynamic from 'next/dynamic';
+import axiosInstance from '../../axios';
 
 const ProblemContainer = dynamic(
   () => import('../../components/Problem/ProblemContainer'),
   { ssr: false },
 );
-
-const style = {
-  problemDetail: css`
-    display: flex;
-    height: calc(100% - 70px);
-    width: 100%;
-  `,
-  problemViewer: css`
-    height: 100%;
-    width: 50%;
-    border-right: 1px solid #3949ab;
-  `,
-  codeContainer: css`
-    height: calc(100% - 50px);
-    width: 100%;
-    border-bottom: 1px solid #3949ab;
-  `,
-  controlPanel: css`
-    height: 49px;
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  `,
-};
 
 function ProblemDetail() {
   const router = useRouter();
@@ -48,7 +24,7 @@ function ProblemDetail() {
 
     (async () => {
       try {
-        const result = await (await axios(`/api/problems/${id}`)).data;
+        const result = await (await axiosInstance(`/api/problems/${id}`)).data;
         setProblem(result);
       } catch (err) {
         console.error(err);
@@ -58,7 +34,7 @@ function ProblemDetail() {
 
   const handleSubmission = async () => {
     try {
-      await axios.post(`/api/problems/${id}/submissions`, { code });
+      await axiosInstance.post(`/api/problems/${id}/submissions`, { code });
       router.push('/status');
     } catch (error) {
       console.error(error);
@@ -79,7 +55,9 @@ function ProblemDetail() {
           <CodeContainer setCode={setCode} />
         </div>
         <div css={style.controlPanel}>
-          <Button onClick={handleSubmission}>제출</Button>
+          <Button minWidth="60px" onClick={handleSubmission}>
+            제출
+          </Button>
         </div>
       </div>
     </div>

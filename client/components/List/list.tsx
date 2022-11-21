@@ -3,19 +3,6 @@ import Paginator from './paginator';
 import ListRow from './listRow';
 import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
 
-interface ListMapper<T> {
-  path: undefined | keyof T;
-  name: string;
-  style?: {
-    head?: SerializedStyles;
-    row?: ((row: T) => SerializedStyles) | SerializedStyles;
-    all?: SerializedStyles;
-  };
-  weight: number;
-  format?: (value: any) => ReactNode;
-  onclick?: (e: MouseEvent, row: T) => void;
-}
-
 interface ListProps<T> {
   pageCount: number;
   currentPage: number;
@@ -23,6 +10,8 @@ interface ListProps<T> {
   data: T[];
 
   mapper: ListMapper<T>[];
+
+  isShowPaginator?: boolean;
 
   rowHref: (row: T) => string;
   pageHref: (page: number) => string;
@@ -77,6 +66,7 @@ function List<T>({
   mapper,
   rowHref,
   pageHref,
+  isShowPaginator,
 }: ListProps<T>) {
   return (
     <div css={style.container}>
@@ -98,11 +88,13 @@ function List<T>({
       {data.map((row, index) => (
         <ListRow key={index} row={row} rowHref={rowHref} mapper={mapper} />
       ))}
-      <Paginator
-        pageCount={pageCount}
-        currentPage={currentPage}
-        href={pageHref}
-      />
+      {isShowPaginator === true || isShowPaginator === undefined ? (
+        <Paginator
+          pageCount={pageCount}
+          currentPage={currentPage}
+          href={pageHref}
+        />
+      ) : undefined}
     </div>
   );
 }
