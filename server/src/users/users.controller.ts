@@ -1,4 +1,12 @@
-import { Controller, HttpStatus, Post, Query, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response, Request } from 'express';
 import { User } from './entities/user.entity';
@@ -8,12 +16,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('oauth')
-  async getOauthRedirect(
+  async postOauthRedirect(
     @Query('code') code: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user: User = await this.usersService.getOauthRedirect(code);
+    const user: User = await this.usersService.postOauthRedirect(code);
     const session: any = req.session;
 
     session.userId = user.id;
