@@ -12,6 +12,7 @@ import { UsersService } from './users.service';
 import { Response, Request } from 'express';
 import { User } from './entities/user.entity';
 import { promisify } from 'util';
+import { GithubLoginDTO } from './dtos/github-login.dto';
 
 @Controller('users')
 export class UsersController {
@@ -19,11 +20,13 @@ export class UsersController {
 
   @Post('github-login')
   async postOauthRedirect(
-    @Query('code') code: string,
+    @Query() githubLoginDTO: GithubLoginDTO,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user: User = await this.usersService.postOauthRedirect(code);
+    const user: User = await this.usersService.postOauthRedirect(
+      githubLoginDTO,
+    );
     const session: any = req.session;
 
     session.userId = user.id;

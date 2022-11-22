@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { map, lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
+import { GithubLoginDTO } from './dtos/github-login.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -12,9 +13,11 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async postOauthRedirect(code: string) {
+  async postOauthRedirect(githubLoginDTO: GithubLoginDTO) {
     try {
-      const accessToken: string = await this.getAccessToken(code);
+      const accessToken: string = await this.getAccessToken(
+        githubLoginDTO.code,
+      );
       const githubUserData = await this.getUserDataFromGithub(accessToken);
       const userFromDB = await this.userRepository.findOneBy({
         githubId: +githubUserData.id,
