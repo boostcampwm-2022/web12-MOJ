@@ -11,20 +11,16 @@ export class SubmissionsService {
   ) {}
 
   async findAll(page: number): Promise<Record<string, any>> {
-    try {
-      const pageSize = 20;
-      const submissions = await this.resultRepository.find({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        order: { id: 'DESC' },
-      });
+    const pageSize = 20;
+    const submissions = await this.resultRepository.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: { id: 'DESC' },
+    });
 
-      const submissionCount = await this.resultRepository.count();
-      const pageCount = Math.ceil(submissionCount / 20);
+    const submissionCount = await this.resultRepository.count();
+    const pageCount = Math.ceil(submissionCount / 20);
 
-      return { submissions, pageCount, currentPage: Number(page) };
-    } catch (e) {
-      console.error(e);
-    }
+    return { submissions, pageCount, currentPage: Number(page) };
   }
 }

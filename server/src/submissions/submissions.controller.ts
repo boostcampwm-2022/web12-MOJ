@@ -25,11 +25,7 @@ export class SubmissionsController {
     )
     page: number,
   ) {
-    try {
-      const submissions = await this.submissionsService.findAll(page);
-      return submissions;
-    } catch (e) {
-      console.error(e);
-    }
+    const submissions = await this.submissionsService.findAll(page);
+    return submissions;
   }
 }
