@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Query, Req, Res } from '@nestjs/common';
+import { Controller, HttpStatus, Post, Query, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response, Request } from 'express';
 import { User } from './entities/user.entity';
@@ -7,7 +7,7 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('oauth')
+  @Post('oauth')
   async getOauthRedirect(
     @Query('code') code: string,
     @Req() req: Request,
