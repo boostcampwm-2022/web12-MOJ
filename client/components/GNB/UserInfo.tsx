@@ -35,7 +35,7 @@ function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
   const handleClick = async () => {
     if (isLoggedIn) {
       await axiosInstance.post('/api/users/logout');
-      router.push('/');
+      location.href = '/';
     } else {
       document.location.href = makeRequestURL();
     }
