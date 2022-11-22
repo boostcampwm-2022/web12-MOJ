@@ -30,4 +30,14 @@ export class ProblemsService {
       },
     );
   }
+
+  async findOne(id: number) {
+    const problem = await this.problemRepository.findOneBy({ id });
+    const example = await this.exampleRepository.find({
+      select: ['id', 'input', 'output'],
+      where: { problemId: id },
+    });
+    console.log(problem, example);
+    return { ...problem, examples: example };
+  }
 }
