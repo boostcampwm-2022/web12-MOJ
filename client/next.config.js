@@ -12,6 +12,14 @@ const nextConfig = {
   compiler: {
     emotion: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/github-login',
+        destination: `http://localhost:4000/users/oauth`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
