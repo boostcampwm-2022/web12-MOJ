@@ -10,7 +10,9 @@ function OAuthPage() {
     const code = router.query.code ?? '';
 
     (async () => {
-      const result = await axiosInstance.post(`/api/github-login?code=${code}`);
+      const result = await axiosInstance.post(
+        `/api/users/github-login?code=${code}`,
+      );
 
       if (result.status !== 200) {
         alert('로그인 실패');

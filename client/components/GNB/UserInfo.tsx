@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { Router } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import axiosInstance from '../../axios';
 import Button from '../common/Button';
 
@@ -19,6 +19,7 @@ const userNameStyle = css`
 `;
 
 function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
+  const router = useRouter();
   const makeRequestURL = () => {
     const requestURL = 'https://github.com/login/oauth/authorize';
     const redirectURL = `${process.env.SERVER_ORIGIN}${process.env.REDIRECT_URL}`;
@@ -28,15 +29,16 @@ function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
     result.searchParams.append('client_id', clientID);
     result.searchParams.append('redirect_uri', encodeURI(redirectURL));
 
-    console.log(result.href);
-
     return result.href;
   };
 
-  const handleClick = () => {
-    if (isLoggedIn) return;
-
-    document.location.href = makeRequestURL();
+  const handleClick = async () => {
+    if (isLoggedIn) {
+      await axiosInstance.post('/api/users/logout');
+      location.href = '/';
+    } else {
+      document.location.href = makeRequestURL();
+    }
   };
 
   return (
