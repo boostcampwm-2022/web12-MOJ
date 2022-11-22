@@ -14,10 +14,7 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      {
-        source: '/api/github-login',
-        destination: `http://localhost:4000/users/oauth`,
-      },
+      { source: '/api/:slug*', destination: `http://localhost:4000/:slug*` },
     ];
   },
 };

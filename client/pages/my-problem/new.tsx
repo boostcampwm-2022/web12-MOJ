@@ -47,7 +47,7 @@ function NewMyProblem() {
       input: inputEditorRef.current?.getInstance().getMarkdown(),
       output: outputEditorRef.current?.getInstance().getMarkdown(),
       limit: limitEditorRef.current?.getInstance().getMarkdown(),
-      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
       examples: examples,
     });
     if (result.status === 201) {
