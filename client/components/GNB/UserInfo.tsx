@@ -28,8 +28,6 @@ function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
     result.searchParams.append('client_id', clientID);
     result.searchParams.append('redirect_uri', encodeURI(redirectURL));
 
-    console.log(result.href);
-
     return result.href;
   };
 
