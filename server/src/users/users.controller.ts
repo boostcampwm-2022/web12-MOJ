@@ -28,7 +28,7 @@ export class UsersController {
     session.userId = user.id;
     session.userName = user.name;
 
-    res.status(HttpStatus.OK).end();
+    res.status(HttpStatus.OK).json({});
   }
 
   @Get('login-status')
