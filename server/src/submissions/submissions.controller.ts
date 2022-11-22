@@ -14,7 +14,15 @@ export class SubmissionsController {
 
   @Get()
   async findAll(
-    @Query('page')
+    @Query(
+      'page',
+      new DefaultValuePipe(1),
+      new ParseIntPipe({
+        exceptionFactory: () => {
+          return new BadRequestException('page가 지정된 형식이 아닙니다.');
+        },
+      }),
+    )
     page: number,
   ) {
     try {
