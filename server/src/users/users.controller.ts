@@ -1,24 +1,55 @@
-import { Controller, HttpStatus, Post, Query, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response, Request } from 'express';
 import { User } from './entities/user.entity';
+import { promisify } from 'util';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('oauth')
-  async getOauthRedirect(
+  @Post('github-login')
+  async postOauthRedirect(
     @Query('code') code: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user: User = await this.usersService.getOauthRedirect(code);
+    const user: User = await this.usersService.postOauthRedirect(code);
     const session: any = req.session;
 
     session.userId = user.id;
     session.userName = user.name;
 
-    res.status(HttpStatus.OK).end();
+    res.status(HttpStatus.OK).json({});
+  }
+
+  @Get('login-status')
+  getLoginStatus(@Req() req: Request) {
+    const session: any = req.session;
+
+    if (!!session.userId && !!session.userName) {
+      return { userName: session.userName };
+    }
+
+    throw new HttpException(
+      '로그인이 되어있지 않습니다.',
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
+
+  @Post('logout')
+  async postLogout(@Req() req: Request) {
+    await promisify(req.session.destroy.bind(req.session))();
+
+    return {};
   }
 }
