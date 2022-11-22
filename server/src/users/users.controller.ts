@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpException,
   HttpStatus,
   Post,
   Query,
@@ -15,7 +16,7 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('oauth')
+  @Post('github-login')
   async postOauthRedirect(
     @Query('code') code: string,
     @Req() req: Request,
@@ -28,5 +29,19 @@ export class UsersController {
     session.userName = user.name;
 
     res.status(HttpStatus.OK).end();
+  }
+
+  @Get('login-status')
+  getLoginStatus(@Req() req: Request, @Res() res: Response) {
+    const session: any = req.session;
+
+    if (!!session.userId && !!session.userName) {
+      res.status(HttpStatus.OK).json({ userName: session.userName });
+    }
+
+    throw new HttpException(
+      '로그인이 되어있지 않습니다.',
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 }
