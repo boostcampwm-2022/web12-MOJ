@@ -32,11 +32,11 @@ export class UsersController {
   }
 
   @Get('login-status')
-  getLoginStatus(@Req() req: Request, @Res() res: Response) {
+  getLoginStatus(@Req() req: Request) {
     const session: any = req.session;
 
     if (!!session.userId && !!session.userName) {
-      res.status(HttpStatus.OK).json({ userName: session.userName });
+      return { userName: session.userName };
     }
 
     throw new HttpException(
