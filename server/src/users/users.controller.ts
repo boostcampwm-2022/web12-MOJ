@@ -11,6 +11,7 @@ import {
 import { UsersService } from './users.service';
 import { Response, Request } from 'express';
 import { User } from './entities/user.entity';
+import { promisify } from 'util';
 
 @Controller('users')
 export class UsersController {
@@ -43,5 +44,12 @@ export class UsersController {
       '로그인이 되어있지 않습니다.',
       HttpStatus.UNAUTHORIZED,
     );
+  }
+
+  @Post('logout')
+  async postLogout(@Req() req: Request) {
+    await promisify(req.session.destroy.bind(req.session))();
+
+    return {};
   }
 }
