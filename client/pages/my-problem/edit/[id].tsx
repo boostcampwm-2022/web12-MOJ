@@ -54,7 +54,7 @@ function NewMyProblem() {
       input: inputEditorRef.current?.getInstance().getMarkdown(),
       output: outputEditorRef.current?.getInstance().getMarkdown(),
       limit: limitEditorRef.current?.getInstance().getMarkdown(),
-      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
       examples: examples,
     });
     if (result.status === 200) {
@@ -160,7 +160,6 @@ function NewMyProblem() {
           취소
         </Button>
         <Button minWidth="60px" onClick={handleSubmit}>
-
           저장
         </Button>
       </div>
