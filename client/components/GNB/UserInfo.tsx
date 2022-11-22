@@ -1,4 +1,6 @@
 import { css } from '@emotion/react';
+import { Router } from 'next/router';
+import axiosInstance from '../../axios';
 import Button from '../common/Button';
 
 interface UserInfoProps {
@@ -17,10 +19,32 @@ const userNameStyle = css`
 `;
 
 function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
+  const makeRequestURL = () => {
+    const requestURL = 'https://github.com/login/oauth/authorize';
+    const redirectURL = `${process.env.SERVER_ORIGIN}${process.env.REDIRECT_URL}`;
+    const clientID = process.env.CLIENT_ID ?? '';
+
+    const result = new URL(requestURL);
+    result.searchParams.append('client_id', clientID);
+    result.searchParams.append('redirect_uri', encodeURI(redirectURL));
+
+    console.log(result.href);
+
+    return result.href;
+  };
+
+  const handleClick = () => {
+    if (isLoggedIn) return;
+
+    document.location.href = makeRequestURL();
+  };
+
   return (
     <div css={userInfoStyle}>
       <span css={userNameStyle}>{isLoggedIn ? userName : ''}</span>
-      <Button minWidth="60px">{isLoggedIn ? '로그아웃' : '로그인'}</Button>
+      <Button onClick={handleClick} minWidth="60px">
+        {isLoggedIn ? '로그아웃' : '로그인'}
+      </Button>
     </div>
   );
 }
