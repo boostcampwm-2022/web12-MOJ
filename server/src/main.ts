@@ -8,12 +8,16 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({ transform: true, stopAtFirstError: true }),
+  );
 
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 6, // 6 hours
+      },
     }),
   );
   await app.listen(4000);
