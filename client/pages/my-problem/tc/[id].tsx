@@ -37,13 +37,16 @@ function Testcase() {
 
   const handleSaveClick = async () => {
     try {
-      testcase.forEach((val) => {
+      const testcases = testcase.map((val) => {
         if (val.input === '' || val.output === '') {
-          alert('빈칸 있음 채우셈');
-          throw new Error('빈칸..');
+          alert('Testcase는 비워둘 수 없습니다.');
+          throw new Error('TC is empty');
         }
+        return { output: val.output, input: val.input };
       });
-      await axiosInstance.post(`/api/problems/${id}/tc`, testcase);
+      await axiosInstance.post(`/api/problems/${id}/tc`, {
+        testcase: testcases,
+      });
       router.push('/my-problem');
     } catch (err) {
       console.error(err);
