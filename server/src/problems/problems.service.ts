@@ -9,9 +9,12 @@ import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { GetTestCaseDTO } from './dtos/get-testcase.dto';
+import { PostSubmissionDTO } from './dtos/post-submission.dto';
 import { Example } from './entities/example.entity';
 import { Problem } from './entities/problem.entity';
 import { Testcase } from './entities/testcase.entity';
+import { Submission } from 'src/submissions/entities/submission.entity';
+import { Language } from 'src/submissions/entities/language.entity';
 
 @Injectable()
 export class ProblemsService {
@@ -20,6 +23,10 @@ export class ProblemsService {
     @InjectRepository(Example) private exampleRepository: Repository<Example>,
     @InjectRepository(Testcase)
     private testcaseRepository: Repository<Testcase>,
+    @InjectRepository(Submission)
+    private submissionRepository: Repository<Submission>,
+    @InjectRepository(Language)
+    private languageRepository: Repository<Language>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -87,5 +94,40 @@ export class ProblemsService {
     });
 
     return { ...problem, examples: example };
+  }
+
+  async postSubmission(
+    userId: number,
+    problemId: number,
+    postSubmissionDTO: PostSubmissionDTO,
+  ) {
+    const problem = await this.problemRepository.findOneBy({ id: problemId });
+
+    if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
+
+    if (!problem.visible || problem.userId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    const language = await this.languageRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        language: postSubmissionDTO.language,
+      },
+    });
+
+    if (!language)
+      throw new NotFoundException('해당 언어는 지원하지 않습니다.');
+
+    const newSubmission = new Submission();
+
+    newSubmission.code = postSubmissionDTO.code;
+    newSubmission.languageId = language.id;
+    newSubmission.problemId = problemId;
+    newSubmission.userId = userId;
+
+    await this.submissionRepository.save(newSubmission);
   }
 }
