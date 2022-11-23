@@ -2,9 +2,11 @@ interface Problem {
   id: number;
   title: string;
   content: string;
-  io: { input: string; output: string };
-  ioExample: { input: string; output: string }[];
-  ioExplain: string;
+  input: string;
+  output: string;
+  examples: { input: string; output: string }[];
+  explanation: string;
+  // TODO: ERD에 제한 추가하고 수정 필요
   limitExplain: string;
   timeLimit: number;
   memoryLimit: number;
@@ -73,4 +75,3 @@ interface StatusSummary {
   time: string;
   datetime: number;
 }
-

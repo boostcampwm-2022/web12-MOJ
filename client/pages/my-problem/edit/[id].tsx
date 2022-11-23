@@ -17,7 +17,7 @@ const WrappedEditor = dynamic(
 );
 
 const EditorWithForwardedRef = React.forwardRef(
-  (props, ref: React.LegacyRef<Editor>) => (
+  (props: EditorProps, ref: React.LegacyRef<Editor>) => (
     <WrappedEditor {...props} forwardedRef={ref} />
   ),
 );
@@ -31,6 +31,7 @@ function NewMyProblem() {
 
   const [title, setTitle] = React.useState<string>('');
   const [timeLimit, setTimeLimit] = React.useState<number>(100);
+  const [problem, setProblem] = React.useState<any>({});
 
   const [examples, setExamples] = useIOList();
 
@@ -53,6 +54,7 @@ function NewMyProblem() {
       content: contentEditorRef.current?.getInstance().getMarkdown(),
       input: inputEditorRef.current?.getInstance().getMarkdown(),
       output: outputEditorRef.current?.getInstance().getMarkdown(),
+      // TODO: ERD에 제한 추가하고 수정 필요
       limit: limitEditorRef.current?.getInstance().getMarkdown(),
       explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
       examples: examples,
@@ -81,13 +83,15 @@ function NewMyProblem() {
 
       setTitle(data.title);
       setTimeLimit(data.timeLimit);
-      contentEditorRef.current?.getInstance().setMarkdown(data.content);
-      inputEditorRef.current?.getInstance().setMarkdown(data.io.input);
-      outputEditorRef.current?.getInstance().setMarkdown(data.io.output);
-      limitEditorRef.current?.getInstance().setMarkdown(data.limitExplain);
-      exampleEditorRef.current?.getInstance().setMarkdown(data.ioExplain);
 
-      setExamples(data.ioExample);
+      contentEditorRef.current?.getInstance().setMarkdown(data.content);
+      inputEditorRef.current?.getInstance().setMarkdown(data.input);
+      outputEditorRef.current?.getInstance().setMarkdown(data.output);
+      limitEditorRef.current?.getInstance().setMarkdown(data.explanation);
+      exampleEditorRef.current?.getInstance().setMarkdown(data.explanation);
+
+      setProblem(data);
+      setExamples(data.examples);
     }
 
     fetchProblem();
@@ -124,13 +128,26 @@ function NewMyProblem() {
         </div>
       </div>
       <div css={style.label}>본문</div>
-      <EditorWithForwardedRef ref={contentEditorRef} />
+      <EditorWithForwardedRef
+        ref={contentEditorRef}
+        initialValue={problem.content}
+      />
       <div css={style.label}>입력</div>
-      <EditorWithForwardedRef ref={inputEditorRef} />
+      <EditorWithForwardedRef
+        ref={inputEditorRef}
+        initialValue={problem.input}
+      />
       <div css={style.label}>출력</div>
-      <EditorWithForwardedRef ref={outputEditorRef} />
+      <EditorWithForwardedRef
+        ref={outputEditorRef}
+        initialValue={problem.output}
+      />
       <div css={style.label}>제한</div>
-      <EditorWithForwardedRef ref={limitEditorRef} />
+      <EditorWithForwardedRef
+        ref={limitEditorRef}
+        // TODO: ERD에 제한 추가하고 수정 필요
+        initialValue={problem.explanation}
+      />
       <div css={style.addBtn}>
         <Button minWidth="60px" onClick={handleAddClick}>
           + 예제 추가
@@ -148,7 +165,10 @@ function NewMyProblem() {
         <IOList arr={examples} setArr={setExamples} />
       </div>
       <div css={style.label}>예제 설명</div>
-      <EditorWithForwardedRef ref={exampleEditorRef} />
+      <EditorWithForwardedRef
+        ref={exampleEditorRef}
+        initialValue={problem.explanation}
+      />
       <div css={style.footer}>
         <Button
           style="cancel"

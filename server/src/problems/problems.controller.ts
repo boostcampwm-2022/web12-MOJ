@@ -31,6 +31,7 @@ export class ProblemsController {
     )
     id: number,
   ) {
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
     return this.problemsService.findOne(id);
   }
 }
