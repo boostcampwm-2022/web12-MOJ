@@ -10,9 +10,6 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       stopAtFirstError: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
     }),
   );
 

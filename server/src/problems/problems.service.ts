@@ -8,7 +8,6 @@ import {
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
-import { GetTestCaseDTO } from './dtos/get-testcase.dto';
 import { Example } from './entities/example.entity';
 import { Problem } from './entities/problem.entity';
 import { Testcase } from './entities/testcase.entity';
@@ -44,15 +43,15 @@ export class ProblemsService {
     );
   }
 
-  async getTestCase(getTestCaseDTO: GetTestCaseDTO, userId: number) {
+  async getTestCase(id: number, userId: number) {
     const [testCases, problem] = await Promise.all([
       this.testcaseRepository.find({
         select: { id: true, input: true, output: true },
-        where: { problemId: getTestCaseDTO.id },
+        where: { problemId: id },
       }),
       this.problemRepository.findOne({
         select: { title: true, userId: true },
-        where: { id: getTestCaseDTO.id },
+        where: { id },
       }),
     ]);
 

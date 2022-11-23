@@ -13,9 +13,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
-import { GetTestCaseDTO } from './dtos/get-testcase.dto';
 import { ProblemsService } from './problems.service';
-import { Request } from 'express';
 
 @Controller('problems')
 export class ProblemsController {
@@ -59,7 +57,14 @@ export class ProblemsController {
   @Get(':id/tc')
   async getTestcase(
     @Req() req: Request,
-    @Param() getTestCaseDTO: GetTestCaseDTO,
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory: () =>
+          new BadRequestException('문제 번호가 숫자가 아닙니다.'),
+      }),
+    )
+    id: number,
   ) {
     const session: any = req.session;
 
@@ -70,6 +75,6 @@ export class ProblemsController {
       );
     }
 
-    return this.problemsService.getTestCase(getTestCaseDTO, session.userId);
+    return this.problemsService.getTestCase(id, session.userId);
   }
 }
