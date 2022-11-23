@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import List from '../components/List';
 import style from '../styles/style';
 
-
 function Home() {
   const router = useRouter();
 
@@ -23,7 +22,7 @@ function Home() {
       else if (Array.isArray(page)) _page = 1;
       else _page = +page;
 
-      const { data } = await axiosInstance.get(`/api/problem?page=${_page}`);
+      const { data } = await axiosInstance.get(`/api/problems?page=${_page}`);
       setProblems(data);
     }
 
@@ -62,7 +61,7 @@ function Home() {
                     text-align: center;
                   `,
                 },
-                format: (value: number) => `${value}%`,
+                format: (value: number) => `--%`,
               },
             ]}
             rowHref={(problem: ProblemSummary) => `/problem/${problem.id}`}
