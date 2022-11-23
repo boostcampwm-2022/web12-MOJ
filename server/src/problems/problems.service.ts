@@ -13,10 +13,13 @@ export class ProblemsService {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async create(createProblemDTO: CreateProblemDTO) {
+  async create(createProblemDTO: CreateProblemDTO, userId: number) {
     await this.dataSource.manager.transaction(
       async (transactionEntityManager: EntityManager) => {
-        const problem = this.problemRepository.create(createProblemDTO);
+        const problem = this.problemRepository.create({
+          ...createProblemDTO,
+          userId,
+        });
         const savedProblem = await transactionEntityManager.save(problem);
         const problemId = savedProblem.id;
 
