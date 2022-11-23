@@ -114,7 +114,7 @@ export class ProblemsService {
     } else if (session.userName === username) {
       const problems = await this.problemRepository
         .createQueryBuilder('problem')
-        .select(['problem.id', 'problem.title'])
+        .select(['problem.id', 'problem.title', 'problem.visible'])
         .where('problem.userId = :userId', { userId: session.userId })
         .skip((page - 1) * 20)
         .take(20)
