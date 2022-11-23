@@ -66,9 +66,8 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
         <Viewer initialValue={problem.input} />
         <h3 css={style.h3}>출력</h3>
         <Viewer initialValue={problem.output} />
-        {/* TODO: ERD에 제한 추가하고 수정 필요 */}
         <h3 css={style.h3}>제한</h3>
-        <Viewer initialValue={problem.explanation} />
+        <Viewer initialValue={problem.limitExplanation} />
         {problem.examples.map(({ input, output }, idx) => {
           return (
             <div css={style.exampleContainer} key={idx}>

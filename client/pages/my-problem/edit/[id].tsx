@@ -8,6 +8,7 @@ import Router, { useRouter } from 'next/router';
 import axiosInstance from '../../../axios';
 import IOList, { useIOList } from '../../../components/common/IOList';
 import style from '../../../styles/style';
+import axios from 'axios';
 
 const WrappedEditor = dynamic(
   () => import('../../../components/Editor/wrapperEditor'),
@@ -54,8 +55,7 @@ function NewMyProblem() {
       content: contentEditorRef.current?.getInstance().getMarkdown(),
       input: inputEditorRef.current?.getInstance().getMarkdown(),
       output: outputEditorRef.current?.getInstance().getMarkdown(),
-      // TODO: ERD에 제한 추가하고 수정 필요
-      limit: limitEditorRef.current?.getInstance().getMarkdown(),
+      limitExplanation: limitEditorRef.current?.getInstance().getMarkdown(),
       explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
       examples: examples,
     });
@@ -78,20 +78,28 @@ function NewMyProblem() {
       if (!id) _id = 1;
       else if (Array.isArray(id)) _id = 1;
       else _id = +id;
+      try {
+        const { data } = await axiosInstance.get(`/api/problems/${_id}`);
 
-      const { data } = await axiosInstance.get(`/api/problems/${_id}`);
+        setTitle(data.title);
+        setTimeLimit(data.timeLimit);
 
-      setTitle(data.title);
-      setTimeLimit(data.timeLimit);
+        contentEditorRef.current?.getInstance().setMarkdown(data.content);
+        inputEditorRef.current?.getInstance().setMarkdown(data.input);
+        outputEditorRef.current?.getInstance().setMarkdown(data.output);
+        limitEditorRef.current
+          ?.getInstance()
+          .setMarkdown(data.limitExplanation);
+        exampleEditorRef.current?.getInstance().setMarkdown(data.explanation);
 
-      contentEditorRef.current?.getInstance().setMarkdown(data.content);
-      inputEditorRef.current?.getInstance().setMarkdown(data.input);
-      outputEditorRef.current?.getInstance().setMarkdown(data.output);
-      limitEditorRef.current?.getInstance().setMarkdown(data.explanation);
-      exampleEditorRef.current?.getInstance().setMarkdown(data.explanation);
-
-      setProblem(data);
-      setExamples(data.examples);
+        setProblem(data);
+        setExamples(data.examples);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 403) router.back();
+          if (error.response?.status === 404) router.back();
+        }
+      }
     }
 
     fetchProblem();
@@ -145,8 +153,7 @@ function NewMyProblem() {
       <div css={style.label}>제한</div>
       <EditorWithForwardedRef
         ref={limitEditorRef}
-        // TODO: ERD에 제한 추가하고 수정 필요
-        initialValue={problem.explanation}
+        initialValue={problem.limitExplanation}
       />
       <div css={style.addBtn}>
         <Button minWidth="60px" onClick={handleAddClick}>

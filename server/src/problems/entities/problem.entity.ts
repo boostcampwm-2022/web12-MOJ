@@ -33,5 +33,5 @@ export class Problem {
   userId: number;
 
   @Column({ type: 'text' })
-  limit: string;
+  limitExplanation: string;
 }

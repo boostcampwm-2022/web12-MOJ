@@ -6,8 +6,7 @@ interface Problem {
   output: string;
   examples: { input: string; output: string }[];
   explanation: string;
-  // TODO: ERD에 제한 추가하고 수정 필요
-  limitExplain: string;
+  limitExplanation: string;
   timeLimit: number;
   memoryLimit: number;
 }
