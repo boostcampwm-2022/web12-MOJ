@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
@@ -17,10 +23,13 @@ export class ProblemsService {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async create(createProblemDTO: CreateProblemDTO) {
+  async create(createProblemDTO: CreateProblemDTO, userId: number) {
     await this.dataSource.manager.transaction(
       async (transactionEntityManager: EntityManager) => {
-        const problem = this.problemRepository.create(createProblemDTO);
+        const problem = this.problemRepository.create({
+          ...createProblemDTO,
+          userId,
+        });
         const savedProblem = await transactionEntityManager.save(problem);
         const problemId = savedProblem.id;
 
@@ -59,5 +68,24 @@ export class ProblemsService {
     }
 
     return { title: problem.title, testCases };
+  }
+
+  async findOne(id: number, userId: number | false) {
+    const problem = await this.problemRepository.findOneBy({ id });
+
+    if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
+
+    if (!problem.visible) {
+      if (!userId || problem.userId !== userId) {
+        throw new ForbiddenException('권한이 없습니다.');
+      }
+    }
+
+    const example = await this.exampleRepository.find({
+      select: ['id', 'input', 'output'],
+      where: { problemId: id },
+    });
+
+    return { ...problem, examples: example };
   }
 }

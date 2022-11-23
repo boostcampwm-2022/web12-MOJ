@@ -63,13 +63,12 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
         <h3 css={style.h3}>문제</h3>
         <Viewer initialValue={problem.content} />
         <h3 css={style.h3}>입력</h3>
-        <Viewer initialValue={problem.io.input} />
+        <Viewer initialValue={problem.input} />
         <h3 css={style.h3}>출력</h3>
-        <Viewer initialValue={problem.io.output} />
+        <Viewer initialValue={problem.output} />
         <h3 css={style.h3}>제한</h3>
-        <Viewer initialValue={problem.limitExplain} />
-
-        {problem.ioExample.map(({ input, output }, idx) => {
+        <Viewer initialValue={problem.limitExplanation} />
+        {problem.examples.map(({ input, output }, idx) => {
           return (
             <div css={style.exampleContainer} key={idx}>
               <div css={style.example}>
@@ -84,7 +83,7 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
           );
         })}
         <h3 css={style.h3}>입출력 예제 설명</h3>
-        <Viewer initialValue={problem.ioExplain} />
+        <Viewer initialValue={problem.explanation} />
       </main>
     </>
   );
