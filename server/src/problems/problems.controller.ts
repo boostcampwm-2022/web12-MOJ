@@ -6,10 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Query,
+  Req,
 } from '@nestjs/common';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { ProblemsService } from './problems.service';
+import { Request } from 'express';
 
 @Controller('problems')
 export class ProblemsController {
@@ -22,16 +23,22 @@ export class ProblemsController {
 
   @Get('/:id')
   async findOne(
+    @Req() req: Request,
     @Param(
       'id',
       new ParseIntPipe({
         exceptionFactory: () =>
-          new BadRequestException('문제 번호 형식이 숫자가 아닙니다.'),
+          new BadRequestException('문제 번호가 숫자가 아닙니다.'),
       }),
     )
     id: number,
   ) {
-    // await new Promise((resolve) => setTimeout(resolve, 5000));
-    return this.problemsService.findOne(id);
+    const session: any = req.session;
+
+    if (!!session.userId && !!session.userName) {
+      return this.problemsService.findOne(id, session.userId);
+    } else {
+      return this.problemsService.findOne(id, false);
+    }
   }
 }
