@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
+import { PostTestCaseDTO } from './dtos/post-testcase.dto';
 import { ProblemsService } from './problems.service';
 
 @Controller('problems')
@@ -76,5 +77,31 @@ export class ProblemsController {
     }
 
     return this.problemsService.getTestCase(id, session.userId);
+  }
+
+  @Post(':id/tc')
+  async postTestcase(
+    @Req() req: Request,
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory: () =>
+          new BadRequestException('문제 번호가 숫자가 아닙니다.'),
+      }),
+    )
+    problemId: number,
+    @Body() postTestCaseDTO: PostTestCaseDTO,
+  ) {
+    const session: any = req.session;
+
+    if (!session.userId || !session.userName) {
+      throw new UnauthorizedException('로그인이 되어있지 않습니다.');
+    }
+
+    return this.problemsService.postTestcase(
+      session.userId,
+      problemId,
+      postTestCaseDTO,
+    );
   }
 }
