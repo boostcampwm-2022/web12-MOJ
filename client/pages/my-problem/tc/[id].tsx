@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../../axios';
@@ -20,9 +21,12 @@ function Testcase() {
           await axiosInstance(`/api/problems/${id}/tc`)
         ).data;
         setTitle(result.title);
-        setTestCase(result.data);
+        setTestCase(result.testCases);
       } catch (err) {
-        console.error(err);
+        if (axios.isAxiosError(err)) {
+          alert(err.response?.data.message);
+          router.back();
+        }
       }
     })();
   }, [id]);
