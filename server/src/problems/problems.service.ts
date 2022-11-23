@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { GetTestCaseDTO } from './dtos/get-testcase.dto';
@@ -87,5 +88,24 @@ export class ProblemsService {
     });
 
     return { ...problem, examples: example };
+  }
+
+  async findAll(
+    page: number,
+    username: string | undefined,
+    session: { userId: number; userName: string },
+  ) {
+    if (!username) {
+      const problems = await this.problemRepository
+        .createQueryBuilder('problem')
+        .select(['problem.id', 'problem.title'])
+        .where('problem.visible = :visible', { visible: true })
+        .skip((page - 1) * 20)
+        .take(20)
+        .orderBy('problem.id', 'DESC')
+        .getMany();
+
+      return problems;
+    }
   }
 }

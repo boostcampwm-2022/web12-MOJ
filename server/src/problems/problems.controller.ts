@@ -10,8 +10,9 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { GetTestCaseDTO } from './dtos/get-testcase.dto';
 import { ProblemsService } from './problems.service';
@@ -33,6 +34,19 @@ export class ProblemsController {
     } else {
       throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
+  }
+
+  @Get()
+  async findAll(
+    @Req() req: Request,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('username') username: string | undefined,
+  ) {
+    const session: any = req.session;
+
+    if (username && !session.userId) throw new UnauthorizedException();
+
+    return this.problemsService.findAll(page, username, session);
   }
 
   @Get('/:id')
