@@ -105,7 +105,30 @@ export class ProblemsService {
         .orderBy('problem.id', 'DESC')
         .getMany();
 
-      return problems;
+      const problemCount = await this.problemRepository.count({
+        where: { visible: true },
+      });
+      const pageCount = Math.ceil(problemCount / 20);
+
+      return { problems, pageCount, currentPage: Number(page) };
+    } else if (session.userName === username) {
+      const problems = await this.problemRepository
+        .createQueryBuilder('problem')
+        .select(['problem.id', 'problem.title'])
+        .where('problem.userId = :userId', { userId: session.userId })
+        .skip((page - 1) * 20)
+        .take(20)
+        .orderBy('problem.id', 'DESC')
+        .getMany();
+
+      const problemCount = await this.problemRepository.count({
+        where: { userId: session.userId },
+      });
+      const pageCount = Math.ceil(problemCount / 20);
+
+      return { problems, pageCount, currentPage: Number(page) };
+    } else {
+      throw new ForbiddenException('다른 사람의 문제에 접근할 수 없습니다.');
     }
   }
 }
