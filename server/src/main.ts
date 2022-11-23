@@ -7,7 +7,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
-    new ValidationPipe({ transform: true, stopAtFirstError: true }),
+    new ValidationPipe({
+      transform: true,
+      stopAtFirstError: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
   );
 
   app.use(

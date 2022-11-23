@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpException,
+  HttpStatus,
   Post,
   Req,
   UnauthorizedException,
@@ -9,7 +11,9 @@ import {
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
+import { GetTestCaseDTO } from './dtos/get-testcase.dto';
 import { ProblemsService } from './problems.service';
 import { Request } from 'express';
 
@@ -50,5 +54,22 @@ export class ProblemsController {
     } else {
       return this.problemsService.findOne(id, false);
     }
+  }
+
+  @Get(':id/tc')
+  async getTestcase(
+    @Req() req: Request,
+    @Param() getTestCaseDTO: GetTestCaseDTO,
+  ) {
+    const session: any = req.session;
+
+    if (!session.userId || !session.userName) {
+      throw new HttpException(
+        '로그인이 되어있지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return this.problemsService.getTestCase(getTestCaseDTO, session.userId);
   }
 }
