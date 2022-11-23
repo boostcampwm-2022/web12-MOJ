@@ -30,7 +30,7 @@ export class ProblemsController {
   ) {
     const session: any = req.session;
 
-    if (!session.userId) {
+    if (!session.userId || !session.userName) {
       throw new HttpException(
         '로그인이 되어있지 않습니다.',
         HttpStatus.UNAUTHORIZED,
