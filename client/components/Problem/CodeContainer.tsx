@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { css } from '@emotion/react';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 
 interface CodeContainerProps {
   setCode: Dispatch<SetStateAction<string>>;
@@ -24,6 +24,10 @@ function CodeContainer({ setCode }: CodeContainerProps) {
   `;
 
   const defaultCode = `# print('Hello World!')\n`;
+
+  useEffect(() => {
+    setCode(defaultCode);
+  }, []);
 
   return (
     <div css={heightStyle('100%')}>
