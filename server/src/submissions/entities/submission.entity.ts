@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Submission {
@@ -16,4 +21,7 @@ export class Submission {
 
   @Column()
   userId: number;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }

@@ -40,6 +40,7 @@ function StatusList({ status }: StatusListProps) {
             name: '결과',
             weight: 1,
             format: (value) => {
+              if (value === 0) return '채점중';
               if (value === 1) return '맞았습니다.';
               if (value === 2) return '틀렸습니다.';
               if (value === 3) return '시간 초과';
