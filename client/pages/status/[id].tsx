@@ -6,35 +6,65 @@ import Editor from '@monaco-editor/react';
 import StatusList from '../../components/status/StatusList';
 import style from '../../styles/style';
 import axiosInstance from '../../axios';
+import axios from 'axios';
 
 function StatusDetail() {
   const router = useRouter();
-  const { id } = router.query;
-  const [code, setCode] = useState<string>('');
   const [status, setStatus] = useState<StatusSummary | null>(null);
+  const [id, setId] = useState<number>();
+  const [submission, setSubmission] = useState<SubmissionResopnseData | null>(
+    null,
+  );
 
   useEffect(() => {
+    if (!id) return;
     (async () => {
-      const res = await (
-        await axiosInstance.get(`/api/submissions/${id}`)
-      ).data;
-      setCode(res.code);
-      setStatus(res.status);
+      try {
+        const res = await (
+          await axiosInstance.get(`/api/submissions/${id}`)
+        ).data;
+        setSubmission(res);
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          alert(err.response?.data.message);
+          router.back();
+        }
+      }
     })();
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    if (!submission) return;
+
+    setStatus({
+      id: submission.submission.id,
+      user: submission.submission.user,
+      title: submission.problem.title,
+      result: submission.submission.stateId,
+      time: submission.submission.time,
+      datetime: submission.submission.datetime,
+    });
+  }, [submission]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      const { id } = router.query;
+      if (typeof id === 'string') setId(+id);
+    }
+  }, [router.isReady]);
 
   return (
     <div css={style.container}>
       <div css={style.title}>풀이 상세</div>
-      {status === null ? (
+      {!submission || !status ? (
         <div>로딩중</div>
       ) : (
         <>
           <StatusList status={status} />
           <div css={style.codeBox}>
             <Editor
-              defaultLanguage="python"
-              defaultValue={code}
+              defaultLanguage={submission.submission.language}
+              defaultValue={submission.submission.code}
               options={{
                 readOnly: true,
                 minimap: {
