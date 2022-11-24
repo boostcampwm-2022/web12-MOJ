@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { PostTestCaseDTO } from './dtos/post-testcase.dto';
@@ -95,6 +96,52 @@ export class ProblemsService {
 
     return { ...problem, examples: example };
   }
+
+  async findAll(
+    page: number,
+    username: string | undefined,
+    session: { userId: number; userName: string },
+  ) {
+    if (!username) {
+      const problems = await this.problemRepository
+        .createQueryBuilder('problem')
+        .select(['problem.id', 'problem.title'])
+        .where('problem.visible = :visible', { visible: true })
+        .skip((page - 1) * 20)
+        .take(20)
+        .orderBy('problem.id', 'DESC')
+        .getMany();
+
+      const problemCount = await this.problemRepository.count({
+        where: { visible: true },
+      });
+      const pageCount = Math.ceil(problemCount / 20);
+
+      return { problems, pageCount, currentPage: Number(page) };
+    } else if (session.userName === username) {
+      const problems = await this.problemRepository
+        .createQueryBuilder('problem')
+        .select([
+          'problem.id',
+          'problem.title',
+          'problem.visible',
+          'problem.createdAt',
+        ])
+        .where('problem.userId = :userId', { userId: session.userId })
+        .skip((page - 1) * 20)
+        .take(20)
+        .orderBy('problem.id', 'DESC')
+        .getMany();
+
+      const problemCount = await this.problemRepository.count({
+        where: { userId: session.userId },
+      });
+      const pageCount = Math.ceil(problemCount / 20);
+
+      return { problems, pageCount, currentPage: Number(page) };
+    } else {
+      throw new ForbiddenException('다른 사람의 문제에 접근할 수 없습니다.');
+    }
 
   async postSubmission(
     userId: number,

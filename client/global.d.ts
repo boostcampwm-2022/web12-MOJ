@@ -44,7 +44,7 @@ interface StatusListResponseData {
 interface MyProblemSummary {
   id: number;
   title: string;
-  datetime: number;
+  createdAt: string;
   visible: number;
 }
 
