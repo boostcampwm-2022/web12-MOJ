@@ -83,7 +83,7 @@ export class SubmissionsService {
     if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
 
     const state = !result
-      ? '채점중'
+      ? '채점 중'
       : await this.stateRepository.findOne({
           select: {
             name: true,
@@ -99,9 +99,11 @@ export class SubmissionsService {
         user: user.name,
         code: submission.code,
         language: language.language,
-        datetime: submission.createdAt,
+        datetime: submission.createdAt.getTime(),
         state,
-        stateId: result?.stateId,
+        stateId: result?.stateId ?? 0,
+        time: result?.time ?? 0,
+        memory: result?.memory ?? 0,
       },
       problem,
     };
