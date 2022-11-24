@@ -70,7 +70,7 @@ interface StatusSummary {
   id: number;
   user: string;
   title: string;
-  result: number;
+  state: string;
   time: number;
   datetime: number;
 }

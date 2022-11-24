@@ -40,7 +40,7 @@ function StatusDetail() {
       id: submission.submission.id,
       user: submission.submission.user,
       title: submission.problem.title,
-      result: submission.submission.stateId,
+      state: submission.submission.state,
       time: submission.submission.time,
       datetime: submission.submission.datetime,
     });
