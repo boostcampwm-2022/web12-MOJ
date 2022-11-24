@@ -9,6 +9,7 @@ import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { PostTestCaseDTO } from './dtos/post-testcase.dto';
+import { UpdateProblemDTO } from './dtos/update-problem.dto';
 import { Example } from './entities/example.entity';
 import { Problem } from './entities/problem.entity';
 import { Testcase } from './entities/testcase.entity';
@@ -87,6 +88,44 @@ export class ProblemsService {
     });
 
     return { ...problem, examples: example };
+  }
+
+  async updateOne(
+    id: number,
+    session: any,
+    updateProblemDTO: UpdateProblemDTO,
+  ) {
+    const problem = await this.problemRepository.findOneBy({ id });
+    if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
+    if (problem.userId !== session.userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    Object.assign(problem, updateProblemDTO);
+    await this.dataSource.manager.transaction(
+      async (transactionEntityManager: EntityManager) => {
+        await transactionEntityManager.save(problem);
+
+        await transactionEntityManager
+          .createQueryBuilder()
+          .delete()
+          .from(Example)
+          .where('problemId = :id', { id: id })
+          .execute();
+
+        await transactionEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(Example)
+          .values(
+            [...updateProblemDTO.examples].map((example) => ({
+              ...example,
+              problemId: id,
+            })),
+          )
+          .execute();
+      },
+    );
   }
 
   async postTestcase(
