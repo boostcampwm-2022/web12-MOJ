@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { networkInterfaces } from 'os';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Problem {
@@ -34,4 +40,7 @@ export class Problem {
 
   @Column({ type: 'text' })
   limitExplanation: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
