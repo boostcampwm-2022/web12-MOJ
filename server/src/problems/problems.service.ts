@@ -8,7 +8,7 @@ import {
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
-import { GetTestCaseDTO } from './dtos/get-testcase.dto';
+import { GetTestCaseDTO, PostTestCaseDTO } from './dtos/get-testcase.dto';
 import { PostSubmissionDTO } from './dtos/post-submission.dto';
 import { Example } from './entities/example.entity';
 import { Problem } from './entities/problem.entity';
@@ -51,15 +51,15 @@ export class ProblemsService {
     );
   }
 
-  async getTestCase(getTestCaseDTO: GetTestCaseDTO, userId: number) {
+  async getTestCase(id: number, userId: number) {
     const [testCases, problem] = await Promise.all([
       this.testcaseRepository.find({
         select: { id: true, input: true, output: true },
-        where: { problemId: getTestCaseDTO.id },
+        where: { problemId: id },
       }),
       this.problemRepository.findOne({
         select: { title: true, userId: true },
-        where: { id: getTestCaseDTO.id },
+        where: { id },
       }),
     ]);
 
@@ -96,6 +96,7 @@ export class ProblemsService {
     return { ...problem, examples: example };
   }
 
+
   async postSubmission(
     userId: number,
     problemId: number,
@@ -129,5 +130,43 @@ export class ProblemsService {
     newSubmission.userId = userId;
 
     await this.submissionRepository.save(newSubmission);
+  }
+
+
+  async postTestcase(
+    userId: number,
+    problemId: number,
+    postTestCaseDTO: PostTestCaseDTO,
+  ) {
+    const problem = await this.problemRepository.findOneBy({ id: problemId });
+
+    if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
+
+    if (!userId || problem.userId !== userId) {
+      throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    await this.dataSource.manager.transaction(
+      async (transactionEntityManager: EntityManager) => {
+        await transactionEntityManager
+          .createQueryBuilder()
+          .delete()
+          .from(Testcase)
+          .where('problemId = :id', { id: problemId })
+          .execute();
+
+        await transactionEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(Testcase)
+          .values(
+            [...postTestCaseDTO.testcase].map((tc) => ({
+              ...tc,
+              problemId: problemId,
+            })),
+          )
+          .execute();
+      },
+    );
   }
 }
