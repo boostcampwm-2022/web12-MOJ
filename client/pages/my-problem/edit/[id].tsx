@@ -8,6 +8,7 @@ import Router, { useRouter } from 'next/router';
 import axiosInstance from '../../../axios';
 import IOList, { useIOList } from '../../../components/common/IOList';
 import style from '../../../styles/style';
+import axios from 'axios';
 
 const WrappedEditor = dynamic(
   () => import('../../../components/Editor/wrapperEditor'),
@@ -17,7 +18,7 @@ const WrappedEditor = dynamic(
 );
 
 const EditorWithForwardedRef = React.forwardRef(
-  (props, ref: React.LegacyRef<Editor>) => (
+  (props: EditorProps, ref: React.LegacyRef<Editor>) => (
     <WrappedEditor {...props} forwardedRef={ref} />
   ),
 );
@@ -31,6 +32,7 @@ function NewMyProblem() {
 
   const [title, setTitle] = React.useState<string>('');
   const [timeLimit, setTimeLimit] = React.useState<number>(100);
+  const [problem, setProblem] = React.useState<any>({});
 
   const [examples, setExamples] = useIOList();
 
@@ -53,8 +55,8 @@ function NewMyProblem() {
       content: contentEditorRef.current?.getInstance().getMarkdown(),
       input: inputEditorRef.current?.getInstance().getMarkdown(),
       output: outputEditorRef.current?.getInstance().getMarkdown(),
-      limit: limitEditorRef.current?.getInstance().getMarkdown(),
-      example: exampleEditorRef.current?.getInstance().getMarkdown(),
+      limitExplanation: limitEditorRef.current?.getInstance().getMarkdown(),
+      explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
       examples: examples,
     });
     if (result.status === 200) {
@@ -76,18 +78,28 @@ function NewMyProblem() {
       if (!id) _id = 1;
       else if (Array.isArray(id)) _id = 1;
       else _id = +id;
+      try {
+        const { data } = await axiosInstance.get(`/api/problems/${_id}`);
 
-      const { data } = await axiosInstance.get(`/api/problems/${_id}`);
+        setTitle(data.title);
+        setTimeLimit(data.timeLimit);
 
-      setTitle(data.title);
-      setTimeLimit(data.timeLimit);
-      contentEditorRef.current?.getInstance().setMarkdown(data.content);
-      inputEditorRef.current?.getInstance().setMarkdown(data.io.input);
-      outputEditorRef.current?.getInstance().setMarkdown(data.io.output);
-      limitEditorRef.current?.getInstance().setMarkdown(data.limitExplain);
-      exampleEditorRef.current?.getInstance().setMarkdown(data.ioExplain);
+        contentEditorRef.current?.getInstance().setMarkdown(data.content);
+        inputEditorRef.current?.getInstance().setMarkdown(data.input);
+        outputEditorRef.current?.getInstance().setMarkdown(data.output);
+        limitEditorRef.current
+          ?.getInstance()
+          .setMarkdown(data.limitExplanation);
+        exampleEditorRef.current?.getInstance().setMarkdown(data.explanation);
 
-      setExamples(data.ioExample);
+        setProblem(data);
+        setExamples(data.examples);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 403) router.back();
+          if (error.response?.status === 404) router.back();
+        }
+      }
     }
 
     fetchProblem();
@@ -124,13 +136,25 @@ function NewMyProblem() {
         </div>
       </div>
       <div css={style.label}>본문</div>
-      <EditorWithForwardedRef ref={contentEditorRef} />
+      <EditorWithForwardedRef
+        ref={contentEditorRef}
+        initialValue={problem.content}
+      />
       <div css={style.label}>입력</div>
-      <EditorWithForwardedRef ref={inputEditorRef} />
+      <EditorWithForwardedRef
+        ref={inputEditorRef}
+        initialValue={problem.input}
+      />
       <div css={style.label}>출력</div>
-      <EditorWithForwardedRef ref={outputEditorRef} />
+      <EditorWithForwardedRef
+        ref={outputEditorRef}
+        initialValue={problem.output}
+      />
       <div css={style.label}>제한</div>
-      <EditorWithForwardedRef ref={limitEditorRef} />
+      <EditorWithForwardedRef
+        ref={limitEditorRef}
+        initialValue={problem.limitExplanation}
+      />
       <div css={style.addBtn}>
         <Button minWidth="60px" onClick={handleAddClick}>
           + 예제 추가
@@ -148,7 +172,10 @@ function NewMyProblem() {
         <IOList arr={examples} setArr={setExamples} />
       </div>
       <div css={style.label}>예제 설명</div>
-      <EditorWithForwardedRef ref={exampleEditorRef} />
+      <EditorWithForwardedRef
+        ref={exampleEditorRef}
+        initialValue={problem.explanation}
+      />
       <div css={style.footer}>
         <Button
           style="cancel"
@@ -160,7 +187,6 @@ function NewMyProblem() {
           취소
         </Button>
         <Button minWidth="60px" onClick={handleSubmit}>
-
           저장
         </Button>
       </div>

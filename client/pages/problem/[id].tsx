@@ -7,6 +7,7 @@ import style from '../../styles/style';
 
 import dynamic from 'next/dynamic';
 import axiosInstance from '../../axios';
+import axios from 'axios';
 
 const ProblemContainer = dynamic(
   () => import('../../components/Problem/ProblemContainer'),
@@ -26,15 +27,21 @@ function ProblemDetail() {
       try {
         const result = await (await axiosInstance(`/api/problems/${id}`)).data;
         setProblem(result);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 403) router.back();
+          if (error.response?.status === 404) router.back();
+        }
       }
     })();
   }, [id]);
 
   const handleSubmission = async () => {
     try {
-      await axiosInstance.post(`/api/problems/${id}/submissions`, { code });
+      await axiosInstance.post(`/api/problems/${id}/submissions`, {
+        language: 'python',
+        code,
+      });
       router.push('/status');
     } catch (error) {
       console.error(error);

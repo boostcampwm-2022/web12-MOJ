@@ -8,6 +8,7 @@ import Router from 'next/router';
 import axiosInstance from '../../axios';
 import IOList, { useIOList } from '../../components/common/IOList';
 import style from '../../styles/style';
+import axios from 'axios';
 
 const WrappedEditor = dynamic(
   () => import('../../components/Editor/wrapperEditor'),
@@ -39,21 +40,30 @@ function NewMyProblem() {
   };
 
   const handleSubmit = async () => {
-    const result = await axiosInstance.post('/api/problems', {
-      title: title,
-      timeLimit: timeLimit,
-      memoryLimit: 512,
-      content: contentEditorRef.current?.getInstance().getMarkdown(),
-      input: inputEditorRef.current?.getInstance().getMarkdown(),
-      output: outputEditorRef.current?.getInstance().getMarkdown(),
-      limit: limitEditorRef.current?.getInstance().getMarkdown(),
-      example: exampleEditorRef.current?.getInstance().getMarkdown(),
-      examples: examples,
-    });
-    if (result.status === 201) {
-      Router.push('/my-problem');
-    } else {
-      // 에러처리
+    try {
+      const result = await axiosInstance.post('/api/problems', {
+        title: title,
+        timeLimit: timeLimit,
+        memoryLimit: 512,
+        content: contentEditorRef.current?.getInstance().getMarkdown(),
+        input: inputEditorRef.current?.getInstance().getMarkdown(),
+        output: outputEditorRef.current?.getInstance().getMarkdown(),
+        limitExplanation: limitEditorRef.current?.getInstance().getMarkdown(),
+        explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
+        examples: examples,
+      });
+      if (result.status === 201) {
+        Router.push('/my-problem');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400)
+          alert('입력 형식 및 빈 칸이 없는지 확인하세요.');
+        if (error.response?.status === 401) {
+          alert('로그인이 필요한 서비스입니다.');
+          Router.back();
+        }
+      }
     }
   };
 

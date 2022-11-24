@@ -28,4 +28,10 @@ export class Problem {
 
   @Column({ default: false })
   visible: boolean;
+
+  @Column()
+  userId: number;
+
+  @Column({ type: 'text' })
+  limitExplanation: string;
 }
