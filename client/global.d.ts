@@ -38,13 +38,13 @@ interface MyProblemListResponseData {
 interface StatusListResponseData {
   pageCount: number;
   currentPage: number;
-  status: StatusSummary[];
+  submissions: StatusSummary[];
 }
 
 interface MyProblemSummary {
   id: number;
   title: string;
-  datetime: number;
+  createdAt: string;
   visible: number;
 }
 
@@ -70,7 +70,22 @@ interface StatusSummary {
   id: number;
   user: string;
   title: string;
-  result: number;
-  time: string;
-  datetime: number;
+  state: string;
+  time: number;
+  createdAt: string;
+}
+
+interface SubmissionResopnseData {
+  submission: {
+    id: number;
+    user: string;
+    code: string;
+    language: string;
+    datetime: number;
+    state: string;
+    time: number;
+    memory: number;
+    stateId: number;
+  };
+  problem: Problem;
 }

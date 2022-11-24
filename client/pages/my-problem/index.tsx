@@ -6,10 +6,10 @@ import Button from '../../components/common/Button';
 import { css } from '@emotion/react';
 import { AddFileSvg, DeleteSvg, EditSvg, Toggle } from '../../components/svgs';
 import Link from 'next/link';
-import { style, modal } from '../../styles';
+import { style } from '../../styles';
 import Modal from '../../components/Modal';
 import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
-
+import axios from 'axios';
 
 interface ModalCloseState {
   isShowModal: false;
@@ -52,14 +52,46 @@ function MyProblem() {
     }
   };
 
+  const handleChangeVisible = async (
+    e: React.MouseEvent,
+    row: MyProblemSummary,
+  ) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.patch(`/api/problems/${row.id}`, {
+        visible: !row.visible,
+      });
+
+      const page = getSafePage();
+
+      if (!page) return;
+      fetchMyProblemList(page);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          alert('문제 번호가 숫자가 아닙니다.');
+        } else if (error.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else if (error.response?.status === 403) {
+          alert('문제 편집 권한이 없습니다.');
+        } else if (error.response?.status === 404) {
+          alert('문제를 찾을 수 없습니다.');
+        }
+      }
+    }
+  };
+
   const [isShowModal, setIsShowModal] = React.useState<boolean>(false);
   const [modalData, setModalData] = React.useState<{
     id: number;
     title: string;
   }>({ id: 0, title: '' });
-
   async function fetchMyProblemList(page: number) {
-    const { data } = await axiosInstance.get(`/api/problems?page=${page}`);
+    const { userName } = (await axiosInstance.get('/api/users/login-status'))
+      .data;
+    const { data } = await axiosInstance.get(
+      `/api/problems?page=${page}&username=${userName}`,
+    );
 
     setMyProblems(data);
   }
@@ -68,7 +100,7 @@ function MyProblem() {
     if (!router.isReady) return;
 
     const page = router.query.page;
-    
+
     let _page = 1;
     if (!page) _page = 1;
     else if (Array.isArray(page)) _page = 1;
@@ -106,7 +138,6 @@ function MyProblem() {
           >
             + 추가
           </Button>
-
         </div>
         {myProblems === null ? (
           <div>로딩중</div>
@@ -129,11 +160,11 @@ function MyProblem() {
                   },
                 },
                 {
-                  path: 'datetime',
+                  path: 'createdAt',
                   name: '출제날짜',
                   weight: 1,
-                  format: (value: number) => {
-                    const date = new Date(value);
+                  format: (value: string) => {
+                    const date = new Date(Date.parse(value));
                     return (
                       <>
                         {date.toLocaleDateString()}
@@ -174,7 +205,7 @@ function MyProblem() {
                   },
                   onclick: (e, row: MyProblemSummary) => {
                     e.preventDefault();
-                    
+
                     setModalData({
                       title: row.title,
                       id: row.id,
@@ -207,21 +238,9 @@ function MyProblem() {
                       text-align: center;
                     `,
                   },
-                  onclick: async (e, row: MyProblemSummary) => {
-                    e.preventDefault();
-                    const result = await axiosInstance.patch(
-                      `/api/problems/${row.id}/visible`,
-                    );
-                    if (result.status === 200) {
-                      const page = getSafePage();
-                      if (!page) return;
-                      fetchMyProblemList(page);
-                    } else {
-                      // 에러처리
-                    }
-                  },
+                  onclick: handleChangeVisible,
                   format: (visible: boolean) =>
-                    visible ? <Toggle.Off /> : <Toggle.On />,
+                    visible ? <Toggle.On /> : <Toggle.Off />,
                 },
               ]}
               rowHref={(status: MyProblemSummary) =>
