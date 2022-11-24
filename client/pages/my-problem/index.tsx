@@ -6,10 +6,9 @@ import Button from '../../components/common/Button';
 import { css } from '@emotion/react';
 import { AddFileSvg, DeleteSvg, EditSvg, Toggle } from '../../components/svgs';
 import Link from 'next/link';
-import { style, modal } from '../../styles';
+import { style } from '../../styles';
 import Modal from '../../components/Modal';
 import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
-
 
 interface ModalCloseState {
   isShowModal: false;
@@ -68,7 +67,7 @@ function MyProblem() {
     if (!router.isReady) return;
 
     const page = router.query.page;
-    
+
     let _page = 1;
     if (!page) _page = 1;
     else if (Array.isArray(page)) _page = 1;
@@ -106,7 +105,6 @@ function MyProblem() {
           >
             + 추가
           </Button>
-
         </div>
         {myProblems === null ? (
           <div>로딩중</div>
@@ -174,7 +172,7 @@ function MyProblem() {
                   },
                   onclick: (e, row: MyProblemSummary) => {
                     e.preventDefault();
-                    
+
                     setModalData({
                       title: row.title,
                       id: row.id,
@@ -210,7 +208,10 @@ function MyProblem() {
                   onclick: async (e, row: MyProblemSummary) => {
                     e.preventDefault();
                     const result = await axiosInstance.patch(
-                      `/api/problems/${row.id}/visible`,
+                      `/api/problems/${row.id}`,
+                      {
+                        visible: !row.visible,
+                      },
                     );
                     if (result.status === 200) {
                       const page = getSafePage();
