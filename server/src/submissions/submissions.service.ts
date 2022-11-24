@@ -24,6 +24,53 @@ export class SubmissionsService {
     private stateRepository: Repository<State>,
   ) {}
 
+  async findAll(page: number) {
+    const pageSize = 20;
+
+    const submissions = await this.submissionRepository
+      .createQueryBuilder('submission')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .orderBy('submission.id', 'DESC')
+      .leftJoinAndMapOne(
+        'submission.user',
+        User,
+        'user',
+        'user.id = submission.userId',
+      )
+      .leftJoinAndMapOne(
+        'submission.problemId',
+        Problem,
+        'problem',
+        'problem.id = submission.problemId',
+      )
+      .leftJoinAndMapOne(
+        'submission.id',
+        Result,
+        'result',
+        'result.submissionId = submission.id',
+      )
+      .leftJoinAndMapOne(
+        'submission.result',
+        State,
+        'state',
+        'state.id = result.stateId',
+      )
+      .select([
+        'submission.id AS id',
+        'user.name AS user',
+        'problem.title AS title',
+        'result.time AS time',
+        'state.name AS result',
+      ])
+      .addSelect('submission.createdAt', 'createdAt')
+      .getRawMany();
+
+    const allSubmissionsCount = await this.submissionRepository.count();
+    const pageCount = Math.ceil(allSubmissionsCount / pageSize);
+    return { submissions, currentPage: page, pageCount };
+  }
+
   async getSubmissions(submissionID: number) {
     // TODO: 403 구현
 
