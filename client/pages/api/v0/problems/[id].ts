@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { problems } from '../../../mock/problems';
+import { problems } from '../../../../mock/problems';
 
 function mockHandler(req: NextApiRequest, res: NextApiResponse) {
   const id = Number(req.query.id);

@@ -38,7 +38,10 @@ function ProblemDetail() {
 
   const handleSubmission = async () => {
     try {
-      await axiosInstance.post(`/api/problems/${id}/submissions`, { code });
+      await axiosInstance.post(`/api/problems/${id}/submissions`, {
+        language: 'python',
+        code,
+      });
       router.push('/status');
     } catch (error) {
       console.error(error);
