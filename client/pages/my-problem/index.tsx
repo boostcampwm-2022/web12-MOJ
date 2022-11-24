@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { style } from '../../styles';
 import Modal from '../../components/Modal';
 import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
+import axios from 'axios';
 
 interface ModalCloseState {
   isShowModal: false;
@@ -48,6 +49,35 @@ function MyProblem() {
       fetchMyProblemList(page);
     } else {
       // 에러처리
+    }
+  };
+
+  const handleChangeVisible = async (
+    e: React.MouseEvent,
+    row: MyProblemSummary,
+  ) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.patch(`/api/problems/${row.id}`, {
+        visible: !row.visible,
+      });
+
+      const page = getSafePage();
+
+      if (!page) return;
+      fetchMyProblemList(page);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          alert('문제 번호가 숫자가 아닙니다.');
+        } else if (error.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else if (error.response?.status === 403) {
+          alert('문제 편집 권한이 없습니다.');
+        } else if (error.response?.status === 404) {
+          alert('문제를 찾을 수 없습니다.');
+        }
+      }
     }
   };
 
@@ -205,22 +235,7 @@ function MyProblem() {
                       text-align: center;
                     `,
                   },
-                  onclick: async (e, row: MyProblemSummary) => {
-                    e.preventDefault();
-                    const result = await axiosInstance.patch(
-                      `/api/problems/${row.id}`,
-                      {
-                        visible: !row.visible,
-                      },
-                    );
-                    if (result.status === 200) {
-                      const page = getSafePage();
-                      if (!page) return;
-                      fetchMyProblemList(page);
-                    } else {
-                      // 에러처리
-                    }
-                  },
+                  onclick: handleChangeVisible,
                   format: (visible: boolean) =>
                     visible ? <Toggle.Off /> : <Toggle.On />,
                 },
