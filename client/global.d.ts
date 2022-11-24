@@ -38,7 +38,7 @@ interface MyProblemListResponseData {
 interface StatusListResponseData {
   pageCount: number;
   currentPage: number;
-  status: StatusSummary[];
+  submissions: StatusSummary[];
 }
 
 interface MyProblemSummary {
@@ -72,7 +72,7 @@ interface StatusSummary {
   title: string;
   result: number;
   time: number;
-  datetime: number;
+  createdAt: string;
 }
 
 interface SubmissionResopnseData {

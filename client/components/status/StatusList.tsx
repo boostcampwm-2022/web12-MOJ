@@ -67,7 +67,7 @@ function StatusList({ status }: StatusListProps) {
             path: 'time',
             name: '시간',
             weight: 1,
-            format: (value: number) => `${value} ms`,
+            format: (value: number) => `${value ?? '--'} ms`,
           },
           {
             path: 'datetime',
