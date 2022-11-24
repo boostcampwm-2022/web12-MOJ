@@ -86,9 +86,12 @@ function MyProblem() {
     id: number;
     title: string;
   }>({ id: 0, title: '' });
-
   async function fetchMyProblemList(page: number) {
-    const { data } = await axiosInstance.get(`/api/problems?page=${page}`);
+    const { userName } = (await axiosInstance.get('/api/users/login-status'))
+      .data;
+    const { data } = await axiosInstance.get(
+      `/api/problems?page=${page}&username=${userName}`,
+    );
 
     setMyProblems(data);
   }
@@ -157,11 +160,11 @@ function MyProblem() {
                   },
                 },
                 {
-                  path: 'datetime',
+                  path: 'createdAt',
                   name: '출제날짜',
                   weight: 1,
-                  format: (value: number) => {
-                    const date = new Date(value);
+                  format: (value: string) => {
+                    const date = new Date(Date.parse(value));
                     return (
                       <>
                         {date.toLocaleDateString()}
@@ -237,7 +240,7 @@ function MyProblem() {
                   },
                   onclick: handleChangeVisible,
                   format: (visible: boolean) =>
-                    visible ? <Toggle.Off /> : <Toggle.On />,
+                    visible ? <Toggle.On /> : <Toggle.Off />,
                 },
               ]}
               rowHref={(status: MyProblemSummary) =>

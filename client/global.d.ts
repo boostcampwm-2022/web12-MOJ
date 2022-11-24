@@ -44,7 +44,7 @@ interface StatusListResponseData {
 interface MyProblemSummary {
   id: number;
   title: string;
-  datetime: number;
+  createdAt: string;
   visible: number;
 }
 
@@ -71,6 +71,21 @@ interface StatusSummary {
   user: string;
   title: string;
   result: number;
-  time: string;
+  time: number;
   datetime: number;
+}
+
+interface SubmissionResopnseData {
+  submission: {
+    id: number;
+    user: string;
+    code: string;
+    language: string;
+    datetime: number;
+    state: string;
+    time: number;
+    memory: number;
+    stateId: number;
+  };
+  problem: Problem;
 }
