@@ -6,6 +6,8 @@ import {
   Param,
   ParseIntPipe,
   UnauthorizedException,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { SubmissionsService } from './submissions.service';
@@ -13,6 +15,13 @@ import { SubmissionsService } from './submissions.service';
 @Controller('submissions')
 export class SubmissionsController {
   constructor(private readonly submissionsService: SubmissionsService) {}
+
+  @Get()
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  ) {
+    return this.submissionsService.findAll(page);
+  }
 
   @Get(':id')
   async getSubmissions(
