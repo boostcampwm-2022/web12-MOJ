@@ -48,21 +48,35 @@ function NewMyProblem() {
     else if (Array.isArray(id)) _id = 1;
     else _id = +id;
 
-    const result = await axiosInstance.put(`/api/problems/${_id}`, {
-      title: title,
-      timeLimit: timeLimit,
-      memoryLimit: 512,
-      content: contentEditorRef.current?.getInstance().getMarkdown(),
-      input: inputEditorRef.current?.getInstance().getMarkdown(),
-      output: outputEditorRef.current?.getInstance().getMarkdown(),
-      limitExplanation: limitEditorRef.current?.getInstance().getMarkdown(),
-      explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
-      examples: examples,
-    });
-    if (result.status === 200) {
+    try {
+      const result = await axiosInstance.put(`/api/problems/${_id}`, {
+        title: title,
+        timeLimit: timeLimit,
+        memoryLimit: 512,
+        content: contentEditorRef.current?.getInstance().getMarkdown(),
+        input: inputEditorRef.current?.getInstance().getMarkdown(),
+        output: outputEditorRef.current?.getInstance().getMarkdown(),
+        limitExplanation: limitEditorRef.current?.getInstance().getMarkdown(),
+        explanation: exampleEditorRef.current?.getInstance().getMarkdown(),
+        examples: examples,
+      });
+
       Router.push('/my-problem');
-    } else {
-      // 에러처리
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          alert('문제 번호가 숫자가 아닙니다.');
+        } else if (error.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+          router.back();
+        } else if (error.response?.status === 403) {
+          alert('문제 편집 권한이 없습니다.');
+          router.back();
+        } else if (error.response?.status === 404) {
+          alert('문제를 찾을 수 없습니다.');
+          router.back();
+        }
+      }
     }
   };
 
