@@ -105,25 +105,26 @@ export class ProblemsService {
     await this.dataSource.manager.transaction(
       async (transactionEntityManager: EntityManager) => {
         await transactionEntityManager.save(problem);
+        if (updateProblemDTO.examples) {
+          await transactionEntityManager
+            .createQueryBuilder()
+            .delete()
+            .from(Example)
+            .where('problemId = :id', { id: id })
+            .execute();
 
-        await transactionEntityManager
-          .createQueryBuilder()
-          .delete()
-          .from(Example)
-          .where('problemId = :id', { id: id })
-          .execute();
-
-        await transactionEntityManager
-          .createQueryBuilder()
-          .insert()
-          .into(Example)
-          .values(
-            [...updateProblemDTO.examples].map((example) => ({
-              ...example,
-              problemId: id,
-            })),
-          )
-          .execute();
+          await transactionEntityManager
+            .createQueryBuilder()
+            .insert()
+            .into(Example)
+            .values(
+              updateProblemDTO.examples.map((example) => ({
+                ...example,
+                problemId: id,
+              })),
+            )
+            .execute();
+        }
       },
     );
   }
