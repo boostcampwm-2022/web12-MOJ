@@ -70,9 +70,12 @@ interface StatusSummary {
   id: number;
   user: string;
   title: string;
-  state: string;
   time: number;
-  createdAt: string;
+  // TODO: 채점 결과, 제출 시각 파편화 해결 필요
+  state: string;
+  result?: string;
+  createdAt?: string;
+  datetime?: number;
 }
 
 interface SubmissionResopnseData {
