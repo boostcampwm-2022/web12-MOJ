@@ -2,6 +2,7 @@ import { networkInterfaces } from 'os';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -43,4 +44,7 @@ export class Problem {
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

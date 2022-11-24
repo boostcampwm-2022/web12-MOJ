@@ -6,7 +6,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { PostTestCaseDTO } from './dtos/post-testcase.dto';
@@ -136,7 +135,7 @@ export class ProblemsService {
       },
     );
   }
-  
+
   async findAll(
     page: number,
     username: string | undefined,
@@ -254,5 +253,29 @@ export class ProblemsService {
           .execute();
       },
     );
+  }
+
+  async deleteProblem(userId: number, problemId: number) {
+    const problem = await this.problemRepository.findOne({
+      select: {
+        userId: true,
+      },
+      where: {
+        id: problemId,
+      },
+    });
+
+    if (problem.userId !== userId) {
+      throw new ForbiddenException('권한이 없습니다. ');
+    }
+
+    await this.problemRepository
+      .createQueryBuilder('problem')
+      .softDelete()
+      .where('id = :id', {
+        id: problemId,
+      })
+      .andWhere('deletedAt IS NULL')
+      .execute();
   }
 }
