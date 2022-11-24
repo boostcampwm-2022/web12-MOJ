@@ -107,7 +107,7 @@ export class ProblemsController {
   }
 
   @Post(':id/submissions')
-  async postTestcase(
+  async postSubmission(
     @Req() req: Request,
     @Param(
       'id',

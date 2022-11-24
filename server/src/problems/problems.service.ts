@@ -8,7 +8,7 @@ import {
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
-import { GetTestCaseDTO, PostTestCaseDTO } from './dtos/get-testcase.dto';
+import { PostTestCaseDTO } from './dtos/post-testcase.dto';
 import { PostSubmissionDTO } from './dtos/post-submission.dto';
 import { Example } from './entities/example.entity';
 import { Problem } from './entities/problem.entity';
@@ -96,7 +96,6 @@ export class ProblemsService {
     return { ...problem, examples: example };
   }
 
-
   async postSubmission(
     userId: number,
     problemId: number,
@@ -131,7 +130,6 @@ export class ProblemsService {
 
     await this.submissionRepository.save(newSubmission);
   }
-
 
   async postTestcase(
     userId: number,
