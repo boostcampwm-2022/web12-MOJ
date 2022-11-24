@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { SubmissionsService } from './submissions.service';
@@ -28,7 +29,7 @@ export class SubmissionsController {
     const session: any = req.session;
 
     if (!session.userId || !session.userName) {
-      // throw new UnauthorizedException('로그인이 되어있지 않습니다.');
+      throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
 
     return await this.submissionsService.getSubmissions(submissionId);
