@@ -49,7 +49,7 @@ function NewMyProblem() {
     else _id = +id;
 
     try {
-      const result = await axiosInstance.put(`/api/problems/${_id}`, {
+      const result = await axiosInstance.patch(`/api/problems/${_id}`, {
         title: title,
         timeLimit: timeLimit,
         memoryLimit: 512,
