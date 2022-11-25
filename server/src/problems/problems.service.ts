@@ -192,7 +192,7 @@ export class ProblemsService {
 
     if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
 
-    if (!problem.visible || problem.userId !== userId) {
+    if (!problem.visible) {
       throw new ForbiddenException('권한이 없습니다.');
     }
 
