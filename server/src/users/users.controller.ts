@@ -1,12 +1,12 @@
 import {
   Controller,
   Get,
-  HttpException,
   HttpStatus,
   Post,
   Query,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response, Request } from 'express';
@@ -43,10 +43,7 @@ export class UsersController {
       return { userName: session.userName };
     }
 
-    throw new HttpException(
-      '로그인이 되어있지 않습니다.',
-      HttpStatus.UNAUTHORIZED,
-    );
+    throw new UnauthorizedException('로그인이 되어있지 않습니다.');
   }
 
   @Post('logout')

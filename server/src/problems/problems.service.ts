@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -65,14 +63,11 @@ export class ProblemsService {
     ]);
 
     if (!problem) {
-      throw new HttpException(
-        '해당 문제가 존재하지 않습니다.',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('해당 문제가 존재하지 않습니다.');
     }
 
     if (problem.userId !== userId) {
-      throw new HttpException('접근 권한이 없습니다.', HttpStatus.FORBIDDEN);
+      throw new ForbiddenException('접근 권한이 없습니다.');
     }
 
     return { title: problem.title, testCases };
