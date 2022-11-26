@@ -95,7 +95,7 @@ export class ProblemsController {
   }
 
   @Get(':id/tc')
-  async getTestcase(
+  async findOneTestCase(
     @Req() req: Request,
     @Param(
       'id',
@@ -115,11 +115,11 @@ export class ProblemsController {
       );
     }
 
-    return this.problemsService.getTestCase(id, session.userId);
+    return this.problemsService.findOneTestCase(id, session.userId);
   }
 
   @Post(':id/tc')
-  async postTestcase(
+  async createTestcase(
     @Req() req: Request,
     @Param(
       'id',
@@ -137,7 +137,7 @@ export class ProblemsController {
       throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
 
-    return this.problemsService.postTestcase(
+    return this.problemsService.createTestCase(
       session.userId,
       problemId,
       postTestCaseDTO,
@@ -145,7 +145,7 @@ export class ProblemsController {
   }
 
   @Post(':id/submissions')
-  async postSubmission(
+  async createSubmission(
     @Req() req: Request,
     @Param(
       'id',
@@ -163,7 +163,7 @@ export class ProblemsController {
       throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
 
-    return this.problemsService.postSubmission(
+    return this.problemsService.createSubmission(
       session.userId,
       problemId,
       postSubmissionDTO,
