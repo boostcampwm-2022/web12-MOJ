@@ -2,7 +2,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import dynamic from 'next/dynamic';
 import { Editor, EditorProps } from '@toast-ui/react-editor';
 import { css } from '@emotion/react';
-import React, { forwardRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Button from '../../../components/common/Button';
 import Router, { useRouter } from 'next/router';
 import axiosInstance from '../../../axios';
@@ -29,10 +29,12 @@ function NewMyProblem() {
   const outputEditorRef = React.useRef<Editor>(null);
   const limitEditorRef = React.useRef<Editor>(null);
   const exampleEditorRef = React.useRef<Editor>(null);
+  const titleRef = React.useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = React.useState<string>('');
   const [timeLimit, setTimeLimit] = React.useState<number>(100);
-  const [problem, setProblem] = React.useState<any>({});
+  const [problem, setProblem] = React.useState<any>();
+  const [loadedEditorCount, setLoadedEditorCount] = React.useState(0);
 
   const [examples, setExamples] = useIOList();
 
@@ -88,6 +90,10 @@ function NewMyProblem() {
     }
   };
 
+  const handleEditorLoad = () => {
+    setLoadedEditorCount((count) => count + 1);
+  };
+
   const router = useRouter();
 
   React.useEffect(() => {
@@ -106,14 +112,6 @@ function NewMyProblem() {
         setTitle(data.title);
         setTimeLimit(data.timeLimit);
 
-        contentEditorRef.current?.getInstance().setMarkdown(data.content);
-        inputEditorRef.current?.getInstance().setMarkdown(data.input);
-        outputEditorRef.current?.getInstance().setMarkdown(data.output);
-        limitEditorRef.current
-          ?.getInstance()
-          .setMarkdown(data.limitExplanation);
-        exampleEditorRef.current?.getInstance().setMarkdown(data.explanation);
-
         setProblem(data);
         setExamples(data.examples);
       } catch (error) {
@@ -127,6 +125,23 @@ function NewMyProblem() {
     fetchProblem();
   }, [router.isReady, router.query.id]);
 
+  useEffect(() => {
+    if (!problem) return;
+
+    contentEditorRef.current?.getInstance().setMarkdown(problem.content, false);
+    inputEditorRef.current?.getInstance().setMarkdown(problem.input, false);
+    outputEditorRef.current?.getInstance().setMarkdown(problem.output, false);
+    limitEditorRef.current
+      ?.getInstance()
+      .setMarkdown(problem.limitExplanation, false);
+    exampleEditorRef.current
+      ?.getInstance()
+      .setMarkdown(problem.explanation, false);
+
+    window.scrollTo({ top: 0 });
+    titleRef.current?.focus();
+  }, [problem, loadedEditorCount]);
+
   return (
     <div css={style.relativeContainer}>
       <div css={style.title}>문제 편집</div>
@@ -137,6 +152,7 @@ function NewMyProblem() {
             css={style.input}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            ref={titleRef}
           ></input>
         </div>
         <div css={style.flexWeight(1)}>
@@ -160,23 +176,14 @@ function NewMyProblem() {
       <div css={style.label}>본문</div>
       <EditorWithForwardedRef
         ref={contentEditorRef}
-        initialValue={problem.content}
+        onLoad={handleEditorLoad}
       />
       <div css={style.label}>입력</div>
-      <EditorWithForwardedRef
-        ref={inputEditorRef}
-        initialValue={problem.input}
-      />
+      <EditorWithForwardedRef ref={inputEditorRef} onLoad={handleEditorLoad} />
       <div css={style.label}>출력</div>
-      <EditorWithForwardedRef
-        ref={outputEditorRef}
-        initialValue={problem.output}
-      />
+      <EditorWithForwardedRef ref={outputEditorRef} onLoad={handleEditorLoad} />
       <div css={style.label}>제한</div>
-      <EditorWithForwardedRef
-        ref={limitEditorRef}
-        initialValue={problem.limitExplanation}
-      />
+      <EditorWithForwardedRef ref={limitEditorRef} onLoad={handleEditorLoad} />
       <div css={style.addBtn}>
         <Button minWidth="60px" onClick={handleAddClick}>
           + 예제 추가
@@ -196,7 +203,7 @@ function NewMyProblem() {
       <div css={style.label}>예제 설명</div>
       <EditorWithForwardedRef
         ref={exampleEditorRef}
-        initialValue={problem.explanation}
+        onLoad={handleEditorLoad}
       />
       <div css={style.footer}>
         <Button

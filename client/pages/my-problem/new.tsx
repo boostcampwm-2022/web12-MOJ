@@ -1,8 +1,8 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import dynamic from 'next/dynamic';
-import { Editor } from '@toast-ui/react-editor';
+import { Editor, EditorProps } from '@toast-ui/react-editor';
 import { css } from '@emotion/react';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import Button from '../../components/common/Button';
 import Router from 'next/router';
 import axiosInstance from '../../axios';
@@ -18,7 +18,7 @@ const WrappedEditor = dynamic(
 );
 
 const EditorWithForwardedRef = React.forwardRef(
-  (props, ref: React.LegacyRef<Editor>) => (
+  (props: EditorProps, ref: React.LegacyRef<Editor>) => (
     <WrappedEditor {...props} forwardedRef={ref} />
   ),
 );
@@ -29,9 +29,11 @@ function NewMyProblem() {
   const outputEditorRef = React.useRef<Editor>(null);
   const limitEditorRef = React.useRef<Editor>(null);
   const exampleEditorRef = React.useRef<Editor>(null);
+  const titleRef = React.useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = React.useState<string>('');
   const [timeLimit, setTimeLimit] = React.useState<number>(100);
+  const [loadedEditorCount, setLoadedEditorCount] = React.useState(0);
 
   const [examples, setExamples] = useIOList();
 
@@ -75,6 +77,15 @@ function NewMyProblem() {
     }
   };
 
+  const handleEditorLoad = () => {
+    setLoadedEditorCount((count) => count + 1);
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    titleRef.current?.focus();
+  }, [loadedEditorCount]);
+
   return (
     <div css={style.relativeContainer}>
       <div css={style.title}>문제 추가</div>
@@ -85,6 +96,7 @@ function NewMyProblem() {
             css={style.input}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            ref={titleRef}
           ></input>
         </div>
         <div css={style.flexWeight(1)}>
@@ -106,13 +118,16 @@ function NewMyProblem() {
         </div>
       </div>
       <div css={style.label}>본문</div>
-      <EditorWithForwardedRef ref={contentEditorRef} />
+      <EditorWithForwardedRef
+        ref={contentEditorRef}
+        onLoad={handleEditorLoad}
+      />
       <div css={style.label}>입력</div>
-      <EditorWithForwardedRef ref={inputEditorRef} />
+      <EditorWithForwardedRef ref={inputEditorRef} onLoad={handleEditorLoad} />
       <div css={style.label}>출력</div>
-      <EditorWithForwardedRef ref={outputEditorRef} />
+      <EditorWithForwardedRef ref={outputEditorRef} onLoad={handleEditorLoad} />
       <div css={style.label}>제한</div>
-      <EditorWithForwardedRef ref={limitEditorRef} />
+      <EditorWithForwardedRef ref={limitEditorRef} onLoad={handleEditorLoad} />
       <div css={style.addBtn}>
         <Button minWidth="60px" onClick={handleAddClick}>
           + 예제 추가
@@ -130,7 +145,10 @@ function NewMyProblem() {
         <IOList arr={examples} setArr={setExamples} />
       </div>
       <div css={style.label}>예제 설명</div>
-      <EditorWithForwardedRef ref={exampleEditorRef} />
+      <EditorWithForwardedRef
+        ref={exampleEditorRef}
+        onLoad={handleEditorLoad}
+      />
 
       <div css={style.footer}>
         <Button
