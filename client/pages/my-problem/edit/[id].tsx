@@ -40,6 +40,14 @@ function NewMyProblem() {
     setExamples((array) => [...array, { input: '', output: '' }]);
   };
 
+  const handleTimeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isNaN(parseInt(e.target.value))) {
+      setTimeLimit(parseInt(e.target.value));
+    } else {
+      setTimeLimit(0);
+    }
+  };
+
   const handleSubmit = async () => {
     const id = router.query.id;
 
@@ -136,7 +144,7 @@ function NewMyProblem() {
           <input
             css={style.input}
             value={timeLimit}
-            onChange={(e) => setTimeLimit(parseInt(e.target.value))}
+            onChange={handleTimeLimitChange}
           ></input>
         </div>
         <div css={style.flexWeight(1)}>
