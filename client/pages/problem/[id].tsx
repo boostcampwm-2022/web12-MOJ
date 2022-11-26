@@ -29,8 +29,8 @@ function ProblemDetail() {
         setProblem(result);
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          if (error.response?.status === 403) router.back();
-          if (error.response?.status === 404) router.back();
+          alert(error.response?.data.message);
+          router.back();
         }
       }
     })();
@@ -44,7 +44,9 @@ function ProblemDetail() {
       });
       router.push('/status');
     } catch (error) {
-      console.error(error);
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data.message);
+      }
     }
   };
 
