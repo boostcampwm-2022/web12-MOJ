@@ -19,14 +19,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('github-login')
-  async postOauthRedirect(
+  async createUser(
     @Query() githubLoginDTO: GithubLoginDTO,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const user: User = await this.usersService.postOauthRedirect(
-      githubLoginDTO,
-    );
+    const user: User = await this.usersService.createUser(githubLoginDTO);
     const session: any = req.session;
 
     session.userId = user.id;
@@ -36,7 +34,7 @@ export class UsersController {
   }
 
   @Get('login-status')
-  getLoginStatus(@Req() req: Request) {
+  findOneUser(@Req() req: Request) {
     const session: any = req.session;
 
     if (!!session.userId && !!session.userName) {
@@ -47,7 +45,7 @@ export class UsersController {
   }
 
   @Post('logout')
-  async postLogout(@Req() req: Request) {
+  async logout(@Req() req: Request) {
     await promisify(req.session.destroy.bind(req.session))();
 
     return {};
