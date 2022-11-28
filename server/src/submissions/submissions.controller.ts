@@ -24,7 +24,7 @@ export class SubmissionsController {
   }
 
   @Get(':id')
-  async getSubmissions(
+  async findOne(
     @Req() req: Request,
     @Param(
       'id',
@@ -41,6 +41,6 @@ export class SubmissionsController {
       throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
 
-    return await this.submissionsService.getSubmissions(submissionId);
+    return await this.submissionsService.findOne(submissionId);
   }
 }
