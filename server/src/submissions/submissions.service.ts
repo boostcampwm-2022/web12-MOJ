@@ -71,7 +71,7 @@ export class SubmissionsService {
     return { submissions, currentPage: page, pageCount };
   }
 
-  async getSubmissions(submissionID: number) {
+  async findOne(submissionID: number) {
     // TODO: 403 구현
 
     const submission = await this.submissionRepository.findOneBy({

@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -52,7 +50,7 @@ export class ProblemsService {
     );
   }
 
-  async getTestCase(id: number, userId: number) {
+  async findOneTestCase(id: number, userId: number) {
     const [testCases, problem] = await Promise.all([
       this.testcaseRepository.find({
         select: { id: true, input: true, output: true },
@@ -65,14 +63,11 @@ export class ProblemsService {
     ]);
 
     if (!problem) {
-      throw new HttpException(
-        '해당 문제가 존재하지 않습니다.',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('해당 문제가 존재하지 않습니다.');
     }
 
     if (problem.userId !== userId) {
-      throw new HttpException('접근 권한이 없습니다.', HttpStatus.FORBIDDEN);
+      throw new ForbiddenException('접근 권한이 없습니다.');
     }
 
     return { title: problem.title, testCases };
@@ -183,7 +178,7 @@ export class ProblemsService {
     }
   }
 
-  async postSubmission(
+  async createSubmission(
     userId: number,
     problemId: number,
     postSubmissionDTO: PostSubmissionDTO,
@@ -218,7 +213,7 @@ export class ProblemsService {
     await this.submissionRepository.save(newSubmission);
   }
 
-  async postTestcase(
+  async createTestCase(
     userId: number,
     problemId: number,
     postTestCaseDTO: PostTestCaseDTO,

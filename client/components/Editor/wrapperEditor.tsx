@@ -3,7 +3,9 @@ import { Editor, EditorProps } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
 const WrappedEditor = (
-  props: EditorProps & { forwardedRef: React.LegacyRef<Editor> },
+  props: EditorProps & {
+    forwardedRef: React.LegacyRef<Editor>;
+  },
 ) => {
   const { forwardedRef } = props;
 
@@ -22,6 +24,10 @@ const WrappedEditor = (
         ['code', 'codeblock'],
       ]}
       initialEditType="markdown"
+      autofocus={false}
+      onFocus={() => {
+        console.log('focus');
+      }}
     />
   );
 };

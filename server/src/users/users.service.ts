@@ -13,7 +13,7 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async postOauthRedirect(githubLoginDTO: GithubLoginDTO) {
+  async createUser(githubLoginDTO: GithubLoginDTO) {
     try {
       const accessToken: string = await this.getAccessToken(
         githubLoginDTO.code,
