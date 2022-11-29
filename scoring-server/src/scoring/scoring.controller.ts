@@ -1,13 +1,27 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Controller,
+  Param,
+  Post,
+  ParseIntPipe,
+  BadRequestException,
+} from '@nestjs/common';
 import { ScoringService } from './scoring.service';
-import { SubmissionDTO } from './dtos/post-submission.dto';
 
 @Controller('scoring')
 export class ScoringController {
   constructor(private readonly scoringService: ScoringService) {}
 
-  @Post()
-  async createSubmission(@Body() submissionDTO: SubmissionDTO) {
-    return this.scoringService.createSubmission(submissionDTO);
+  @Post(':id')
+  async createSubmission(
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory: () =>
+          new BadRequestException('제출 번호가 숫자가 아닙니다.'),
+      }),
+    )
+    submissionId: number,
+  ) {
+    return this.scoringService.createSubmission(submissionId);
   }
 }
