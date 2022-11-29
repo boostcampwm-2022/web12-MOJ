@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { spawn } from 'child_process';
 import { Testcase } from './entities/testcase.entity';
 import { Repository } from 'typeorm';
 import { Problem } from './entities/problem.entity';
 import { Submission } from './entities/submission.entity';
 import { Language } from './entities/language.entity';
+import { randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
+import { promises as fs } from 'fs';
+import { spawn } from 'child_process';
+
 @Injectable()
 export class ScoringService {
   constructor(
@@ -16,6 +21,7 @@ export class ScoringService {
     private submissionRepository: Repository<Submission>,
     @InjectRepository(Language)
     private languageRepository: Repository<Language>,
+    private readonly configService: ConfigService,
   ) {}
 
   async createSubmission(submissionId: number) {
@@ -59,5 +65,43 @@ export class ScoringService {
         },
       }),
     ]);
+
+    const promises = [];
+    const rootPath = this.configService.get('FILE_ROOT');
+    const codeFilePath = path.resolve(rootPath, randomUUID());
+    const testcaseFilePaths = testcases.reduce((acc, cur, idx) => {
+      const inputPath = `${codeFilePath}.${(idx + 1).toString()}.in`;
+      const outputPath = `${codeFilePath}.${(idx + 1).toString()}.out`;
+
+      promises.push(
+        fs.writeFile(inputPath, cur.input, 'utf-8'),
+        fs.writeFile(outputPath, cur.output, 'utf-8'),
+      );
+
+      acc.push(inputPath, outputPath);
+      return acc;
+    }, []);
+
+    promises.push(fs.writeFile(codeFilePath, submission.code, 'utf-8'));
+
+    await Promise.all(promises);
+
+    const scoringProcess = spawn('python3', [
+      './python/run.py',
+      language.language,
+      problem.timeLimit,
+      problem.memoryLimit,
+      codeFilePath,
+      ...testcaseFilePaths,
+    ]);
+
+    scoringProcess.stdout.on('data', (data) => {
+      console.log(data.toString());
+
+      fs.unlink(codeFilePath);
+      testcaseFilePaths.forEach((path) => {
+        fs.unlink(path);
+      });
+    });
   }
 }
