@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { spawn } from 'child_process';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ScoringService {
@@ -22,6 +23,7 @@ export class ScoringService {
     @InjectRepository(Language)
     private languageRepository: Repository<Language>,
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
 
   async createSubmission(submissionId: number) {
@@ -96,12 +98,19 @@ export class ScoringService {
     ]);
 
     scoringProcess.stdout.on('data', (data) => {
-      console.log(data.toString());
-
       fs.unlink(codeFilePath);
       testcaseFilePaths.forEach((path) => {
         fs.unlink(path);
       });
+
+      this.httpService.post(
+        this.configService.get('API_SERVER_URL') +
+          `/api/submissions/results/${submission.id}`,
+        {
+          submissionId,
+          state: +data.toString(),
+        },
+      );
     });
   }
 }
