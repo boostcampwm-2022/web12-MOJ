@@ -110,6 +110,7 @@ export class ScoringService {
           submissionId,
           state: +data.toString(),
           maxTime: 100 + Math.floor(Math.random() * 4000),
+          maxMemory: 20 + Math.floor(Math.random() * 100),
         },
       );
     });
