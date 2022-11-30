@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { map, lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
 import { GithubLoginDTO } from './dtos/github-login.dto';
 import { User } from './entities/user.entity';
@@ -18,6 +17,7 @@ export class UsersService {
       const accessToken: string = await this.getAccessToken(
         githubLoginDTO.code,
       );
+
       const githubUserData = await this.getUserDataFromGithub(accessToken);
       const userFromDB = await this.userRepository.findOneBy({
         githubId: +githubUserData.id,
@@ -41,53 +41,42 @@ export class UsersService {
     const requestURL = 'https://github.com/login/oauth/access_token';
     const clientID = process.env.CLIENT_ID;
     const clientSecret = process.env.CLIENT_SECRET;
-    const request = this.http
-      .post(
-        requestURL,
-        {
-          client_id: clientID,
-          client_secret: clientSecret,
-          code,
+    const response = await this.http.axiosRef.post(
+      requestURL,
+      {
+        client_id: clientID,
+        client_secret: clientSecret,
+        code,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
         },
-        {
-          headers: {
-            Accept: 'application/json',
-          },
-        },
-      )
-      .pipe(
-        map((res) => {
-          if (res.status === 200) return res.data;
-          throw new Error(`Github Server Error: ${res.status}`);
-        }),
-        map((data) => data.access_token),
-        map((token) => {
-          if (!token) throw new Error('no token');
-          return token;
-        }),
-      );
-    return await lastValueFrom(request);
+      },
+    );
+
+    if (response.status !== 200)
+      throw new Error(`Github Server Error: ${response.status}`);
+    if (!response.data.access_token) throw new Error('no token');
+
+    return response.data.access_token;
   }
 
   async getUserDataFromGithub(accessToken: string) {
-    const request = this.http
-      .get('https://api.github.com/user', {
+    const response = await this.http.axiosRef.get(
+      'https://api.github.com/user',
+      {
         headers: {
           Accept: 'application/json',
           Authorization: `token ${accessToken}`,
         },
-      })
-      .pipe(
-        map((res) => {
-          if (res.status === 200) return res.data;
-          throw new Error(`Github Server Error: ${res.status}`);
-        }),
-        map((data) => {
-          if (data) return { id: data.id, userName: data.login };
-          throw new Error('There is no github user');
-        }),
-      );
+      },
+    );
 
-    return await lastValueFrom(request);
+    if (response.status !== 200)
+      throw new Error(`Github Server Error: ${response.status}`);
+    if (!response.data) throw new Error('There is no github user');
+
+    return { id: response.data.id, userName: response.data.login };
   }
 }
