@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +11,8 @@ import { Problem } from 'src/problems/entities/problem.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Result } from './entities/result.entity';
 import { State } from './entities/state.entity';
+import { PostResultDTO } from './dtos/post-result.dto';
+
 @Injectable()
 export class SubmissionsService {
   constructor(
@@ -156,5 +162,34 @@ export class SubmissionsService {
         title: problem.title,
       },
     };
+  }
+
+  async createResult(submissionId: number, postResultDTO: PostResultDTO) {
+    const submission = await this.submissionRepository.findOneBy({
+      id: submissionId,
+    });
+
+    if (!submission) {
+      throw new NotFoundException('존재하지 않는 제출입니다. ');
+    }
+
+    const result = await this.resultRepository.findOneBy({ submissionId });
+
+    if (!!result) {
+      throw new ConflictException('해당 제출은 이미 채점되었습니다. ');
+    }
+
+    try {
+      const newResult = new Result();
+
+      newResult.time = postResultDTO.maxTime;
+      newResult.memory = postResultDTO.maxMemory;
+      newResult.stateId = postResultDTO.state;
+      newResult.submissionId = submissionId;
+
+      await this.resultRepository.save(newResult);
+    } catch (err) {
+      return err.message;
+    }
   }
 }

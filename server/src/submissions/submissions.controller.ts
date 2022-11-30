@@ -8,8 +8,11 @@ import {
   UnauthorizedException,
   Query,
   DefaultValuePipe,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { PostResultDTO } from './dtos/post-result.dto';
 import { SubmissionsService } from './submissions.service';
 
 @Controller('submissions')
@@ -42,5 +45,20 @@ export class SubmissionsController {
     }
 
     return await this.submissionsService.findOne(submissionId);
+  }
+
+  @Post('results/:id')
+  async createResult(
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory: () =>
+          new BadRequestException('문제 번호가 숫자가 아닙니다.'),
+      }),
+    )
+    submissionId: number,
+    @Body() postResultDTO: PostResultDTO,
+  ) {
+    return this.submissionsService.createResult(submissionId, postResultDTO);
   }
 }
