@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
@@ -14,10 +15,13 @@ import { Problem } from './entities/problem.entity';
 import { Testcase } from './entities/testcase.entity';
 import { Submission } from 'src/submissions/entities/submission.entity';
 import { Language } from 'src/submissions/entities/language.entity';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProblemsService {
   constructor(
+    private readonly http: HttpService,
     @InjectRepository(Problem) private problemRepository: Repository<Problem>,
     @InjectRepository(Example) private exampleRepository: Repository<Example>,
     @InjectRepository(Testcase)
@@ -27,6 +31,7 @@ export class ProblemsService {
     @InjectRepository(Language)
     private languageRepository: Repository<Language>,
     @InjectDataSource() private dataSource: DataSource,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createProblemDTO: CreateProblemDTO, userId: number) {
@@ -211,6 +216,13 @@ export class ProblemsService {
     newSubmission.userId = userId;
 
     await this.submissionRepository.save(newSubmission);
+
+    const response = await this.http.axiosRef.post(
+      this.configService.get('SCORING_SERVER') + `/scoring/${newSubmission.id}`,
+    );
+
+    if (response.status !== 201)
+      throw new InternalServerErrorException('server error');
   }
 
   async createTestCase(

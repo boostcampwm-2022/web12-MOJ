@@ -7,6 +7,7 @@ import { Problem } from './entities/problem.entity';
 import { Testcase } from './entities/testcase.entity';
 import { ProblemsController } from './problems.controller';
 import { ProblemsService } from './problems.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { ProblemsService } from './problems.service';
       Submission,
       Language,
     ]),
+    HttpModule,
   ],
-  controllers: [ProblemsController],
   providers: [ProblemsService],
+  controllers: [ProblemsController],
 })
 export class ProblemsModule {}
