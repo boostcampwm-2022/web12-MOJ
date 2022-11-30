@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Testcase } from './entities/testcase.entity';
 import { Repository } from 'typeorm';
@@ -27,6 +31,7 @@ export class ScoringService {
   ) {}
 
   async createSubmission(submissionId: number) {
+    console.log('start');
     const submission = await this.submissionRepository.findOne({
       select: {
         code: true,
@@ -97,22 +102,27 @@ export class ScoringService {
       ...testcaseFilePaths,
     ]);
 
-    scoringProcess.stdout.on('data', (data) => {
+    scoringProcess.stdout.on('data', async (data) => {
       fs.unlink(codeFilePath);
       testcaseFilePaths.forEach((path) => {
         fs.unlink(path);
       });
 
-      this.httpService.post(
-        this.configService.get('API_SERVER_URL') +
-          `/api/submissions/results/${submission.id}`,
-        {
-          submissionId,
-          state: +data.toString(),
-          maxTime: 100 + Math.floor(Math.random() * 4000),
-          maxMemory: 20 + Math.floor(Math.random() * 100),
-        },
-      );
+      try {
+        const response = await this.httpService.axiosRef.post(
+          this.configService.get('API_SERVER_URL') +
+            `/api/submissions/results/${submissionId}`,
+          {
+            state: +data.toString(),
+            maxTime: 100 + Math.floor(Math.random() * 4000),
+            maxMemory: 20 + Math.floor(Math.random() * 100),
+          },
+        );
+        if (response.status !== 201)
+          throw new InternalServerErrorException('server error');
+      } catch (err) {
+        console.log(err);
+      }
     });
   }
 }
