@@ -22,6 +22,6 @@ export class ScoringController {
     )
     submissionId: number,
   ) {
-    return this.scoringService.createSubmission(submissionId);
+    return this.scoringService.insertQueue(submissionId);
   }
 }
