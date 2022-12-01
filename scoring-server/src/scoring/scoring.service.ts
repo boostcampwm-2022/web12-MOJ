@@ -13,11 +13,15 @@ import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { HttpService } from '@nestjs/axios';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ScoringService {
+  private queue = [];
+  private isReady = true;
+
   constructor(
     @InjectRepository(Testcase)
     private testcaseRepository: Repository<Testcase>,
@@ -30,8 +34,20 @@ export class ScoringService {
     private readonly httpService: HttpService,
   ) {}
 
+  async insertQueue(submissionId: number) {
+    this.queue.push(submissionId);
+  }
+
+  @Cron('* * * * * *')
+  async handleCron() {
+    if (this.isReady && this.queue.length > 0) {
+      this.isReady = false;
+      const submissionId = this.queue.shift();
+      await this.createSubmission(submissionId);
+    }
+  }
+
   async createSubmission(submissionId: number) {
-    console.log('start');
     const submission = await this.submissionRepository.findOne({
       select: {
         code: true,
@@ -75,7 +91,10 @@ export class ScoringService {
 
     const promises = [];
     const rootPath = this.configService.get('FILE_ROOT');
-    const codeFilePath = path.resolve(rootPath, randomUUID());
+    const codeFileName = randomUUID();
+    const submissionPath = path.resolve(rootPath, submissionId.toString());
+    await fs.mkdir(submissionPath);
+    const codeFilePath = path.resolve(submissionPath, codeFileName);
     const testcaseFilePaths = testcases.reduce((acc, cur, idx) => {
       const inputPath = `${codeFilePath}.${(idx + 1).toString()}.in`;
       const outputPath = `${codeFilePath}.${(idx + 1).toString()}.out`;
@@ -93,29 +112,43 @@ export class ScoringService {
 
     await Promise.all(promises);
 
-    const scoringProcess = spawn('python3', [
-      './python/run.py',
-      language.language,
-      problem.timeLimit,
-      problem.memoryLimit,
-      codeFilePath,
-      ...testcaseFilePaths,
+    const dockerContainer = execSync(`NAME=judger-${1} ./docker/run.sh`);
+
+    const copyFile = execSync(
+      `docker cp ${submissionPath}/. judger-${1}:/submission`,
+    );
+
+    const scoringProcess = spawn('docker', [
+      'exec',
+      'judger-1',
+      'python3',
+      '/judger/run.py',
+      problem.timeLimit.toString(),
+      problem.memoryLimit.toString(),
     ]);
 
     scoringProcess.stdout.on('data', async (data) => {
-      fs.unlink(codeFilePath);
-      testcaseFilePaths.forEach((path) => {
-        fs.unlink(path);
-      });
+      fs.rm(submissionPath, { recursive: true, force: true });
+
+      const resultArray = [
+        '정답',
+        '오답',
+        '컴파일 에러',
+        '시간 초과',
+        '런타임 에러',
+      ];
 
       try {
+        const { result, memory, time } = JSON.parse(data.toString());
+        const resultNumber = resultArray.findIndex((v) => v === result);
+
         const response = await this.httpService.axiosRef.post(
           this.configService.get('API_SERVER_URL') +
             `/api/submissions/results/${submissionId}`,
           {
-            state: +data.toString(),
-            maxTime: 100 + Math.floor(Math.random() * 4000),
-            maxMemory: 20 + Math.floor(Math.random() * 100),
+            state: resultNumber === -1 ? 5 : resultNumber + 1,
+            maxTime: time ?? 0,
+            maxMemory: memory ?? 0,
           },
         );
         if (response.status !== 201)
@@ -123,6 +156,7 @@ export class ScoringService {
       } catch (err) {
         console.log(err);
       }
+      this.isReady = true;
     });
   }
 }
