@@ -23,6 +23,8 @@ const EditorWithForwardedRef = React.forwardRef(
   ),
 );
 
+EditorWithForwardedRef.displayName = 'EditorWithForwardedRef';
+
 function NewMyProblem() {
   const contentEditorRef = React.useRef<Editor>(null);
   const inputEditorRef = React.useRef<Editor>(null);
