@@ -13,7 +13,7 @@ import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { execSync, spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { HttpService } from '@nestjs/axios';
 import { Cron } from '@nestjs/schedule';
 
@@ -34,7 +34,7 @@ export class ScoringService {
     private readonly httpService: HttpService,
   ) {}
 
-  async insertQueue(submissionId: number) {
+  insertQueue(submissionId: number) {
     this.queue.push(submissionId);
   }
 
@@ -63,7 +63,9 @@ export class ScoringService {
       throw new NotFoundException('해당 제출이 없습니다.');
     }
 
-    const [language, problem, testcases] = await Promise.all([
+    const [problem, testcases] = await Promise.all([
+      // TODO: 추후 언어 추가 예정
+      /*
       this.languageRepository.findOne({
         select: {
           language: true,
@@ -72,6 +74,7 @@ export class ScoringService {
           id: submission.languageId,
         },
       }),
+      */
       this.problemRepository.findOne({
         select: { timeLimit: true, memoryLimit: true },
         where: {
@@ -95,7 +98,7 @@ export class ScoringService {
     const submissionPath = path.resolve(rootPath, submissionId.toString());
     await fs.mkdir(submissionPath);
     const codeFilePath = path.resolve(submissionPath, codeFileName);
-    const testcaseFilePaths = testcases.reduce((acc, cur, idx) => {
+    testcases.reduce((acc, cur, idx) => {
       const inputPath = `${codeFilePath}.${(idx + 1).toString()}.in`;
       const outputPath = `${codeFilePath}.${(idx + 1).toString()}.out`;
 
@@ -112,11 +115,21 @@ export class ScoringService {
 
     await Promise.all(promises);
 
-    const dockerContainer = execSync(`NAME=judger-${1} ./docker/run.sh`);
+    const execPromise = async (cmd: string) => {
+      return new Promise((resolve, reject) => {
+        exec(cmd, (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ stdout, stderr });
+          }
+        });
+      });
+    };
 
-    const copyFile = execSync(
-      `docker cp ${submissionPath}/. judger-${1}:/submission`,
-    );
+    await execPromise(`NAME=judger-${1} ./docker/run.sh`);
+
+    await execPromise(`docker cp ${submissionPath}/. judger-${1}:/submission`);
 
     const scoringProcess = spawn('docker', [
       'exec',

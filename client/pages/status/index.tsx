@@ -5,7 +5,7 @@ import List from '../../components/List';
 import { css } from '@emotion/react';
 import style from '../../styles/style';
 
-function status() {
+function Status() {
   const router = useRouter();
 
   const [status, setStatus] = React.useState<StatusListResponseData | null>(
@@ -106,4 +106,4 @@ function status() {
   );
 }
 
-export default status;
+export default Status;
