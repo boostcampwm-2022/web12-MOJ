@@ -1,0 +1,85 @@
+name: Build, Test
+
+on:
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize]
+
+jobs:
+  client-build-test:
+    defaults:
+      run:
+        working-directory: client
+
+    name: Client build test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Get yarn cache directory path
+        id: client-yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        id: client-yarn-cache
+        with:
+          path: |
+            ${{ steps.client-yarn-cache-dir-path.outputs.dir }}
+            ${{ github.workspace }}/client/.next/cache
+          key: ${{ runner.os }}-client-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/**.[jt]s', '**/**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-client-yarn-${{ hashFiles('**/yarn.lock') }}-
+            ${{ runner.os }}-client-yarn-
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+  server-build-test:
+    defaults:
+      run:
+        working-directory: server
+
+    name: Server build test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Get yarn cahce directory path
+        id: server-yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        id: server-yarn-cache
+        with:
+          path: ${{ steps.server-yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-server-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-server-yarn-
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
