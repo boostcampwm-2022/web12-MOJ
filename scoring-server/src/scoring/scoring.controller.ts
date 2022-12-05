@@ -12,7 +12,7 @@ export class ScoringController {
   constructor(private readonly scoringService: ScoringService) {}
 
   @Post(':id')
-  async createSubmission(
+  createSubmission(
     @Param(
       'id',
       new ParseIntPipe({
