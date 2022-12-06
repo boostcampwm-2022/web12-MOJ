@@ -1,4 +1,4 @@
-name: 'deploy'
+name: 'scoring-deploy-1'
 
 on:
   push:
