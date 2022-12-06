@@ -35,9 +35,6 @@ export class SubmissionsService {
 
     const submissions = await this.submissionRepository
       .createQueryBuilder('submission')
-      .skip((page - 1) * pageSize)
-      .take(pageSize)
-      .orderBy('submission.id', 'DESC')
       .leftJoinAndMapOne(
         'submission.user',
         User,
@@ -70,6 +67,9 @@ export class SubmissionsService {
         'state.name AS result',
       ])
       .addSelect('submission.createdAt', 'createdAt')
+      .offset((page - 1) * pageSize)
+      .limit(pageSize)
+      .orderBy('submission.id', 'DESC')
       .getRawMany();
 
     const allSubmissionsCount = await this.submissionRepository.count();
