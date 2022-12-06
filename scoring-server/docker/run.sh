@@ -7,4 +7,4 @@ fi
 
 docker kill $NAME
 
-docker run -idt --rm --name $NAME scoring_docker /start.sh
+docker run --cpuset-cpus=$1 --cpus=1 -idt --rm --name $NAME scoring_docker /start.sh

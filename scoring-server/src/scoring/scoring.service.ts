@@ -19,8 +19,14 @@ import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ScoringService {
+  private containerCount = parseInt(
+    this.configService.get('CONTAINER_COUNT') || '1',
+  );
   private queue = [];
-  private isReady = true;
+  private isReadyContainer = Array.from(
+    { length: this.containerCount },
+    (_, i) => i,
+  );
 
   constructor(
     @InjectRepository(Testcase)
@@ -39,15 +45,15 @@ export class ScoringService {
   }
 
   @Cron('* * * * * *')
-  async handleCron() {
-    if (this.isReady && this.queue.length > 0) {
-      this.isReady = false;
+  handleCron() {
+    while (this.isReadyContainer.length > 0 && this.queue.length > 0) {
+      const containerIndex = this.isReadyContainer.shift();
       const submissionId = this.queue.shift();
-      await this.createSubmission(submissionId);
+      this.createSubmission(submissionId, containerIndex);
     }
   }
 
-  async createSubmission(submissionId: number) {
+  async createSubmission(submissionId: number, containerIndex: number) {
     const submission = await this.submissionRepository.findOne({
       select: {
         code: true,
@@ -127,13 +133,17 @@ export class ScoringService {
       });
     };
 
-    await execPromise(`NAME=judger-${1} ./docker/run.sh`);
+    await execPromise(
+      `NAME=judger-${containerIndex} ./docker/run.sh ${containerIndex}`,
+    );
 
-    await execPromise(`docker cp ${submissionPath}/. judger-${1}:/submission`);
+    await execPromise(
+      `docker cp ${submissionPath}/. judger-${containerIndex}:/submission`,
+    );
 
     const scoringProcess = spawn('docker', [
       'exec',
-      'judger-1',
+      `judger-${containerIndex}`,
       'python3',
       '/judger/run.py',
       problem.timeLimit.toString(),
@@ -169,7 +179,7 @@ export class ScoringService {
       } catch (err) {
         console.log(err);
       }
-      this.isReady = true;
+      this.isReadyContainer.push(containerIndex);
     });
   }
 }
