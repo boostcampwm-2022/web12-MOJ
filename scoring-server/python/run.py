@@ -301,6 +301,8 @@ if __name__ == "__main__":
             systemcall_names
         )
 
+        os.remove(output_path)
+
         if testcase_result != "정답":
             print_exit({"result": testcase_result})
 
