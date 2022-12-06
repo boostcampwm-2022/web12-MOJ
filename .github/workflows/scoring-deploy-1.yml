@@ -16,7 +16,7 @@ jobs:
           host: ${{ secrets.SC_SSH_HOST_1 }}
           username: ${{ secrets.SC_SSH_USERNAME_1 }}
           password: ${{ secrets.SC_SSH_PASSWORD_1 }}
-          port: ${{ secrets.SC_SSH_PORT }}
+          port: ${{ secrets.SC_SSH_PORT_1 }}
           script: |
             cd ~/web12-MOJ
             git pull
