@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: scoring-deploy-1
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.SC_SSH_HOST_1 }}
           username: ${{ secrets.SC_SSH_USERNAME_1 }}
