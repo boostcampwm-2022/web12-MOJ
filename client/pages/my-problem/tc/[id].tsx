@@ -39,7 +39,7 @@ function Testcase() {
   const handleSaveClick = async () => {
     try {
       const testcases = testcase.map((val) => {
-        if (val.input === '' || val.output === '') {
+        if (val.output === '') {
           alert('Testcase는 비워둘 수 없습니다.');
           throw new Error('TC is empty');
         }

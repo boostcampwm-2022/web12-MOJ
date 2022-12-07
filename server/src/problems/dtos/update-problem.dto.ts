@@ -8,10 +8,11 @@ import {
   Equals,
   IsBoolean,
   IsOptional,
+  IsDefined,
 } from 'class-validator';
 
 class Example {
-  @IsNotEmpty()
+  @IsDefined()
   @IsOptional()
   input: string;
 
