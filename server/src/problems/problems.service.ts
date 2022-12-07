@@ -17,6 +17,8 @@ import { Submission } from 'src/submissions/entities/submission.entity';
 import { Language } from 'src/submissions/entities/language.entity';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class ProblemsService {
@@ -32,6 +34,7 @@ export class ProblemsService {
     private languageRepository: Repository<Language>,
     @InjectDataSource() private dataSource: DataSource,
     private readonly configService: ConfigService,
+    @InjectQueue('scoring') private scoringQueue: Queue,
   ) {}
 
   async create(createProblemDTO: CreateProblemDTO, userId: number) {
@@ -217,12 +220,22 @@ export class ProblemsService {
 
     await this.submissionRepository.save(newSubmission);
 
-    const response = await this.http.axiosRef.post(
-      this.configService.get('SCORING_SERVER') + `/scoring/${newSubmission.id}`,
+    const scoringJob = await this.scoringQueue.add(
+      {
+        data: newSubmission.id,
+      },
+      {
+        jobId: newSubmission.id,
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
     );
+    // const response = await this.http.axiosRef.post(
+    //   this.configService.get('SCORING_SERVER') + `/scoring/${newSubmission.id}`,
+    // );
 
-    if (response.status !== 201)
-      throw new InternalServerErrorException('server error');
+    // if (scoringJob.status !== 201)
+    //   throw new InternalServerErrorException('server error');
   }
 
   async createTestCase(
