@@ -15,17 +15,11 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { exec, spawn } from 'child_process';
 import { HttpService } from '@nestjs/axios';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ScoringService {
   private containerCount = parseInt(
     this.configService.get('CONTAINER_COUNT') || '1',
-  );
-  private queue = [];
-  private isReadyContainer = Array.from(
-    { length: this.containerCount },
-    (_, i) => i,
   );
 
   constructor(
@@ -39,19 +33,6 @@ export class ScoringService {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}
-
-  insertQueue(submissionId: number) {
-    this.queue.push(submissionId);
-  }
-
-  @Cron('* * * * * *')
-  handleCron() {
-    while (this.isReadyContainer.length > 0 && this.queue.length > 0) {
-      const containerIndex = this.isReadyContainer.shift();
-      const submissionId = this.queue.shift();
-      this.createSubmission(submissionId, containerIndex);
-    }
-  }
 
   async createSubmission(submissionId: number, containerIndex: number) {
     const submission = await this.submissionRepository.findOne({
@@ -150,36 +131,38 @@ export class ScoringService {
       problem.memoryLimit.toString(),
     ]);
 
-    scoringProcess.stdout.on('data', async (data) => {
-      fs.rm(submissionPath, { recursive: true, force: true });
+    return await new Promise((resolve, reject) => {
+      scoringProcess.stdout.on('data', async (data) => {
+        fs.rm(submissionPath, { recursive: true, force: true });
 
-      const resultArray = [
-        '정답',
-        '오답',
-        '컴파일 에러',
-        '시간 초과',
-        '런타임 에러',
-      ];
+        const resultArray = [
+          '정답',
+          '오답',
+          '컴파일 에러',
+          '시간 초과',
+          '런타임 에러',
+        ];
 
-      try {
-        const { result, memory, time } = JSON.parse(data.toString());
-        const resultNumber = resultArray.findIndex((v) => v === result);
+        try {
+          const { result, memory, time } = JSON.parse(data.toString());
+          const resultNumber = resultArray.findIndex((v) => v === result);
 
-        const response = await this.httpService.axiosRef.post(
-          this.configService.get('API_SERVER_URL') +
-            `/api/submissions/results/${submissionId}`,
-          {
-            state: resultNumber === -1 ? 5 : resultNumber + 1,
-            maxTime: time ?? 0,
-            maxMemory: memory ?? 0,
-          },
-        );
-        if (response.status !== 201)
-          throw new InternalServerErrorException('server error');
-      } catch (err) {
-        console.log(err);
-      }
-      this.isReadyContainer.push(containerIndex);
+          const response = await this.httpService.axiosRef.post(
+            this.configService.get('API_SERVER_URL') +
+              `/api/submissions/results/${submissionId}`,
+            {
+              state: resultNumber === -1 ? 5 : resultNumber + 1,
+              maxTime: time ?? 0,
+              maxMemory: memory ?? 0,
+            },
+          );
+          if (response.status !== 201)
+            throw new InternalServerErrorException('server error');
+        } catch (err) {
+          reject(err);
+        }
+        resolve(null);
+      });
     });
   }
 }
