@@ -8,6 +8,7 @@ import { Testcase } from './entities/testcase.entity';
 import { ProblemsController } from './problems.controller';
 import { ProblemsService } from './problems.service';
 import { HttpModule } from '@nestjs/axios';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -18,6 +19,13 @@ import { HttpModule } from '@nestjs/axios';
       Submission,
       Language,
     ]),
+    BullModule.registerQueue({
+      name: 'scoring',
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     HttpModule,
   ],
   providers: [ProblemsService],
