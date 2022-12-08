@@ -1,9 +1,11 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Language } from 'src/submissions/entities/language.entity';
@@ -12,10 +14,22 @@ import { User } from 'src/users/entities/user.entity';
 import { Result } from './entities/result.entity';
 import { State } from './entities/state.entity';
 import { PostResultDTO } from './dtos/post-result.dto';
+import { CachingService } from 'src/caching/caching.service';
+
+export interface SubmissionType {
+  id: number;
+  user: string;
+  createAt: string;
+  title: string;
+  time: number;
+  result: string;
+}
 
 @Injectable()
 export class SubmissionsService {
   constructor(
+    @Inject(forwardRef(() => CachingService))
+    private readonly cachingService: CachingService,
     @InjectRepository(Submission)
     private submissionRepository: Repository<Submission>,
     @InjectRepository(Language)
@@ -30,8 +44,126 @@ export class SubmissionsService {
     private stateRepository: Repository<State>,
   ) {}
 
+  async findLatest(count: number): Promise<SubmissionType[]> {
+    const submissions: SubmissionType[] = await this.submissionRepository
+      .createQueryBuilder('submission')
+      .leftJoinAndMapOne(
+        'submission.user',
+        User,
+        'user',
+        'user.id = submission.userId',
+      )
+      .leftJoinAndMapOne(
+        'submission.problemId',
+        Problem,
+        'problem',
+        'problem.id = submission.problemId',
+      )
+      .leftJoinAndMapOne(
+        'submission.id',
+        Result,
+        'result',
+        'result.submissionId = submission.id',
+      )
+      .leftJoinAndMapOne(
+        'submission.result',
+        State,
+        'state',
+        'state.id = result.stateId',
+      )
+      .select([
+        'submission.id AS id',
+        'user.name AS user',
+        'problem.title AS title',
+        'result.time AS time',
+        'state.name AS result',
+      ])
+      .addSelect('submission.createdAt', 'createdAt')
+      .orderBy('submission.id', 'DESC')
+      .limit(count)
+      .getRawMany();
+
+    return submissions;
+  }
+
+  async findAllByRange(start: number, end: number) {
+    const cachedRange = await this.cachingService.findCachedSubmissionRange();
+    if (cachedRange.start <= start && cachedRange.end >= end) {
+      const cachedSumbission = await this.cachingService.findAllSubmission();
+      return {
+        submissions: cachedSumbission.filter(
+          (submission) => submission.id >= start && submission.id <= end,
+        ),
+      };
+    }
+
+    const submissions = await this.submissionRepository
+      .createQueryBuilder('submission')
+      .leftJoinAndMapOne(
+        'submission.user',
+        User,
+        'user',
+        'user.id = submission.userId',
+      )
+      .leftJoinAndMapOne(
+        'submission.problemId',
+        Problem,
+        'problem',
+        'problem.id = submission.problemId',
+      )
+      .leftJoinAndMapOne(
+        'submission.id',
+        Result,
+        'result',
+        'result.submissionId = submission.id',
+      )
+      .leftJoinAndMapOne(
+        'submission.result',
+        State,
+        'state',
+        'state.id = result.stateId',
+      )
+      .select([
+        'submission.id AS id',
+        'user.name AS user',
+        'problem.title AS title',
+        'result.time AS time',
+        'state.name AS result',
+      ])
+      .addSelect('submission.createdAt', 'createdAt')
+      .andWhere({ id: Between(start, end) })
+      .orderBy('submission.id', 'DESC')
+      .getRawMany();
+    return { submissions };
+  }
+
   async findAll(page: number) {
     const pageSize = 20;
+    const range = await this.submissionRepository.find({
+      select: { id: true },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: {
+        id: 'DESC',
+      },
+    });
+
+    const start = range.at(-1).id,
+      end = range.at(0).id;
+
+    const cachedRange = await this.cachingService.findCachedSubmissionRange();
+    if (cachedRange.start <= start && cachedRange.end >= end) {
+      const cachedSumbission = await this.cachingService.findAllSubmission();
+      const allSubmissionsCount = await this.submissionRepository.count();
+      const pageCount = Math.ceil(allSubmissionsCount / pageSize);
+      return {
+        submissions: cachedSumbission.filter(
+          (submission) => submission.id >= start && submission.id <= end,
+        ),
+        currentPage: page,
+        pageCount,
+      };
+    }
 
     const submissions = await this.submissionRepository
       .createQueryBuilder('submission')
@@ -136,7 +268,7 @@ export class SubmissionsService {
     if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
 
     const state = !result
-      ? { name: '채점 중' }
+      ? { name: null }
       : await this.stateRepository.findOne({
           select: {
             name: true,

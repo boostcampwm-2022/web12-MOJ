@@ -6,12 +6,38 @@ import { css } from '@emotion/react';
 import style from '../../styles/style';
 import Head from 'next/head';
 
+interface SubmissionsResponse {
+  currentPage: number;
+  pageCount: number;
+  submissions: {
+    createdAt: string;
+    id: number;
+    user: string;
+    title: string;
+    time: number;
+    result: string;
+  }[];
+}
+
 function Status() {
   const router = useRouter();
 
   const [status, setStatus] = React.useState<StatusListResponseData | null>(
     null,
   );
+
+  const [range, setRange] = React.useState<{ start: number; end: number }>({
+    start: -1,
+    end: -1,
+  });
+
+  function createUrl(
+    page: number,
+    { start, end }: { start: number; end: number },
+  ) {
+    if (start === -1 || end === -1) return `/api/submissions?page=${page}`;
+    else return `/api/submissions?start=${start}&end=${end}`;
+  }
 
   React.useEffect(() => {
     if (!router.isReady) return;
@@ -24,14 +50,34 @@ function Status() {
       else if (Array.isArray(page)) _page = 1;
       else _page = +page;
 
-      const { data } = await axiosInstance.get(
-        `/api/submissions?page=${_page}`,
+      const { data } = await axiosInstance.get<StatusListResponseData>(
+        createUrl(_page, { start: -1, end: -1 }),
       );
       setStatus(data);
+
+      const start = data.submissions.at(-1)?.id;
+      const end = data.submissions.at(0)?.id;
+
+      setRange({ start: start ?? -1, end: end ?? -1 });
     }
 
     fetchSubmissionList();
   }, [router.isReady, router.query.page]);
+
+  React.useEffect(() => {
+    if (status === null || range.start === -1 || range.end === -1) return;
+    let timer: NodeJS.Timeout | undefined = undefined;
+    if (status.submissions.some(({ result }) => result === null)) {
+      timer = setTimeout(async () => {
+        const { data } = await axiosInstance.get<StatusListResponseData>(
+          createUrl(0, range),
+        );
+        setStatus(data);
+      }, 1000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [range, status]);
 
   return (
     <>
