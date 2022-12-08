@@ -9,6 +9,7 @@ import axiosInstance from '../../../axios';
 import IOList, { useIOList } from '../../../components/common/IOList';
 import style from '../../../styles/style';
 import axios from 'axios';
+import Head from 'next/head';
 
 const WrappedEditor = dynamic(
   () => import('../../../components/Editor/wrapperEditor'),
@@ -145,83 +146,97 @@ function NewMyProblem() {
   }, [problem, loadedEditorCount]);
 
   return (
-    <div css={style.relativeContainer}>
-      <div css={style.title}>문제 편집</div>
-      <div css={style.labelWrapper}>
-        <div css={style.flexWeight(4)}>
-          <div css={style.label}>제목</div>
-          <input
-            css={style.input}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            ref={titleRef}
-          ></input>
+    <>
+      <Head>
+        <title>MOJ | 문제 수정</title>
+      </Head>
+      <div css={style.relativeContainer}>
+        <div css={style.title}>문제 편집</div>
+        <div css={style.labelWrapper}>
+          <div css={style.flexWeight(4)}>
+            <div css={style.label}>제목</div>
+            <input
+              css={style.input}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              ref={titleRef}
+            ></input>
+          </div>
+          <div css={style.flexWeight(1)}>
+            <div css={style.label}>시간 제한(ms)</div>
+            <input
+              css={style.input}
+              value={timeLimit}
+              onChange={handleTimeLimitChange}
+            ></input>
+          </div>
+          <div css={style.flexWeight(1)}>
+            <div css={style.label}>메모리 제한(MB)</div>
+            <input
+              css={style.input}
+              value={512}
+              contentEditable={false}
+              disabled
+            ></input>
+          </div>
         </div>
-        <div css={style.flexWeight(1)}>
-          <div css={style.label}>시간 제한(ms)</div>
-          <input
-            css={style.input}
-            value={timeLimit}
-            onChange={handleTimeLimitChange}
-          ></input>
+        <div css={style.label}>본문</div>
+        <EditorWithForwardedRef
+          ref={contentEditorRef}
+          onLoad={handleEditorLoad}
+        />
+        <div css={style.label}>입력</div>
+        <EditorWithForwardedRef
+          ref={inputEditorRef}
+          onLoad={handleEditorLoad}
+        />
+        <div css={style.label}>출력</div>
+        <EditorWithForwardedRef
+          ref={outputEditorRef}
+          onLoad={handleEditorLoad}
+        />
+        <div css={style.label}>제한</div>
+        <EditorWithForwardedRef
+          ref={limitEditorRef}
+          onLoad={handleEditorLoad}
+        />
+        <div css={style.addBtn}>
+          <Button minWidth="60px" onClick={handleAddClick}>
+            + 예제 추가
+          </Button>
         </div>
-        <div css={style.flexWeight(1)}>
-          <div css={style.label}>메모리 제한(MB)</div>
-          <input
-            css={style.input}
-            value={512}
-            contentEditable={false}
-            disabled
-          ></input>
-        </div>
-      </div>
-      <div css={style.label}>본문</div>
-      <EditorWithForwardedRef
-        ref={contentEditorRef}
-        onLoad={handleEditorLoad}
-      />
-      <div css={style.label}>입력</div>
-      <EditorWithForwardedRef ref={inputEditorRef} onLoad={handleEditorLoad} />
-      <div css={style.label}>출력</div>
-      <EditorWithForwardedRef ref={outputEditorRef} onLoad={handleEditorLoad} />
-      <div css={style.label}>제한</div>
-      <EditorWithForwardedRef ref={limitEditorRef} onLoad={handleEditorLoad} />
-      <div css={style.addBtn}>
-        <Button minWidth="60px" onClick={handleAddClick}>
-          + 예제 추가
-        </Button>
-      </div>
 
-      <div
-        css={css`
-          & > div {
-            border: none;
-            min-height: 0;
-          }
-        `}
-      >
-        <IOList arr={examples} setArr={setExamples} />
-      </div>
-      <div css={style.label}>예제 설명</div>
-      <EditorWithForwardedRef
-        ref={exampleEditorRef}
-        onLoad={handleEditorLoad}
-      />
-      <div css={style.footer}>
-        <Button
-          style="cancel"
-          minWidth="60px"
-          onClick={() => {
-            Router.back();
-          }}
+        <div
+          css={css`
+            & > div {
+              border: none;
+              min-height: 0;
+            }
+          `}
         >
-          취소
-        </Button>
-        <Button minWidth="60px" onClick={handleSubmit}>
-          저장
-        </Button>
+          <IOList arr={examples} setArr={setExamples} />
+        </div>
+        <div css={style.label}>예제 설명</div>
+        <EditorWithForwardedRef
+          ref={exampleEditorRef}
+          onLoad={handleEditorLoad}
+        />
+        <div css={style.footer}>
+          <Button
+            style="cancel"
+            minWidth="60px"
+            onClick={() => {
+              Router.back();
+            }}
+          >
+            취소
+          </Button>
+          <Button minWidth="60px" onClick={handleSubmit}>
+            저장
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

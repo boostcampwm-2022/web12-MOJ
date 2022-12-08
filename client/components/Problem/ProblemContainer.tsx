@@ -45,6 +45,14 @@ const style = {
     padding: 5px;
     border-radius: 5px;
   `,
+  input: css`
+    border: none;
+    background-color: #eaeaea;
+    border-radius: 3px;
+    padding: 10px 15px;
+    overflow-x: auto;
+    margin-right: 10px;
+  `,
 };
 
 function ProblemContainer({ problem }: ProblemContainerProps) {
@@ -73,11 +81,11 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
             <div css={style.exampleContainer} key={idx}>
               <div css={style.example}>
                 <h3 css={style.h3}>예제 입력 {idx + 1}</h3>
-                <div css={style.exampleText}>{input}</div>
+                <pre css={style.input}>{input}</pre>
               </div>
               <div css={style.example}>
                 <h3 css={style.h3}>예제 출력 {idx + 1}</h3>
-                <div css={style.exampleText}>{output}</div>
+                <pre css={style.input}>{output}</pre>
               </div>
             </div>
           );

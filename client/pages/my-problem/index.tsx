@@ -10,6 +10,7 @@ import { style } from '../../styles';
 import Modal from '../../components/Modal';
 import DeleteProblemModal from '../../components/Modal/DeleteProblemModal';
 import axios from 'axios';
+import Head from 'next/head';
 
 interface ModalCloseState {
   isShowModal: false;
@@ -111,6 +112,9 @@ function MyProblem() {
 
   return (
     <>
+      <Head>
+        <title>MOJ | 문제 출제</title>
+      </Head>
       <Modal<{
         id: number;
         title: string;

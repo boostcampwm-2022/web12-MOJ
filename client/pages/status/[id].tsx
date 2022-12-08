@@ -7,6 +7,7 @@ import StatusList from '../../components/status/StatusList';
 import style from '../../styles/style';
 import axiosInstance from '../../axios';
 import axios from 'axios';
+import Head from 'next/head';
 
 function StatusDetail() {
   const router = useRouter();
@@ -54,36 +55,41 @@ function StatusDetail() {
   }, [router.isReady]);
 
   return (
-    <div css={style.container}>
-      <div css={style.title}>풀이 상세</div>
-      {!submission || !status ? (
-        <div>로딩중</div>
-      ) : (
-        <>
-          <StatusList status={status} />
-          <div css={style.codeBox}>
-            <Editor
-              defaultLanguage={submission.submission.language}
-              defaultValue={submission.submission.code}
-              options={{
-                readOnly: true,
-                minimap: {
-                  enabled: false,
-                },
-                scrollbar: {
-                  vertical: 'hidden',
-                  verticalScrollbarSize: 0,
-                },
-                scrollBeyondLastLine: false,
-              }}
-            />
-          </div>
-        </>
-      )}
-      <div css={style.footer}>
-        <Button>복사</Button>
+    <>
+      <Head>
+        <title>MOJ | 풀이 상세</title>
+      </Head>
+      <div css={style.container}>
+        <div css={style.title}>풀이 상세</div>
+        {!submission || !status ? (
+          <div>로딩중</div>
+        ) : (
+          <>
+            <StatusList status={status} />
+            <div css={style.codeBox}>
+              <Editor
+                defaultLanguage={submission.submission.language}
+                defaultValue={submission.submission.code}
+                options={{
+                  readOnly: true,
+                  minimap: {
+                    enabled: false,
+                  },
+                  scrollbar: {
+                    vertical: 'hidden',
+                    verticalScrollbarSize: 0,
+                  },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+          </>
+        )}
+        <div css={style.footer}>
+          <Button>복사</Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
