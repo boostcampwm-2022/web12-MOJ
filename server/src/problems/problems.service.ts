@@ -170,6 +170,7 @@ export class ProblemsService {
           'problem.createdAt',
         ])
         .where('problem.userId = :userId', { userId: session.userId })
+        // .andWhere('problem.deletedAt IS NOT NULL')
         .skip((page - 1) * 20)
         .take(20)
         .orderBy('problem.id', 'DESC')

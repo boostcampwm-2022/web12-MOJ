@@ -6,10 +6,11 @@ import {
   ValidateNested,
   IsInt,
   Equals,
+  IsDefined,
 } from 'class-validator';
 
 class Example {
-  @IsNotEmpty()
+  @IsDefined()
   input: string;
 
   @IsNotEmpty()

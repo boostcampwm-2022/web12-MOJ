@@ -8,6 +8,7 @@ import style from '../../styles/style';
 import dynamic from 'next/dynamic';
 import axiosInstance from '../../axios';
 import axios from 'axios';
+import Head from 'next/head';
 
 const ProblemContainer = dynamic(
   () => import('../../components/Problem/ProblemContainer'),
@@ -51,25 +52,30 @@ function ProblemDetail() {
   };
 
   return (
-    <div css={style.problemDetail}>
-      <div css={style.problemViewer}>
-        {problem && <ProblemContainer problem={problem} />}
-      </div>
-      <div
-        css={css`
-          width: 50%;
-        `}
-      >
-        <div css={style.codeContainer}>
-          <CodeContainer setCode={setCode} />
+    <>
+      <Head>
+        <title>MOJ | 문제 제출</title>
+      </Head>
+      <div css={style.problemDetail}>
+        <div css={style.problemViewer}>
+          {problem && <ProblemContainer problem={problem} />}
         </div>
-        <div css={style.controlPanel}>
-          <Button minWidth="60px" onClick={handleSubmission}>
-            제출
-          </Button>
+        <div
+          css={css`
+            width: 50%;
+          `}
+        >
+          <div css={style.codeContainer}>
+            <CodeContainer setCode={setCode} />
+          </div>
+          <div css={style.controlPanel}>
+            <Button minWidth="60px" onClick={handleSubmission}>
+              제출
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -22,8 +22,13 @@ export class SubmissionsController {
   @Get()
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('start', new DefaultValuePipe(-1), ParseIntPipe) start: number,
+    @Query('end', new DefaultValuePipe(-1), ParseIntPipe) end: number,
   ) {
-    return this.submissionsService.findAll(page);
+    if (start === -1 || end === -1) {
+      return this.submissionsService.findAll(page);
+    }
+    return this.submissionsService.findAllByRange(start, end);
   }
 
   @Get(':id')

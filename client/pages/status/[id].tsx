@@ -7,6 +7,7 @@ import StatusList from '../../components/status/StatusList';
 import style from '../../styles/style';
 import axiosInstance from '../../axios';
 import axios from 'axios';
+import Head from 'next/head';
 
 function StatusDetail() {
   const router = useRouter();
@@ -18,19 +19,34 @@ function StatusDetail() {
 
   useEffect(() => {
     if (!id) return;
-    (async () => {
+
+    let timer: NodeJS.Timeout | undefined = undefined;
+
+    const fetchSubmission = async () => {
       try {
         const res = await (
-          await axiosInstance.get(`/api/submissions/${id}`)
+          await axiosInstance.get<SubmissionResopnseData>(
+            `/api/submissions/${id}`,
+          )
         ).data;
         setSubmission(res);
+
+        if (res.submission.state === null) {
+          timer = setTimeout(() => {
+            fetchSubmission();
+          }, 1000);
+        }
       } catch (err) {
         if (axios.isAxiosError(err)) {
           alert(err.response?.data.message);
           router.back();
         }
       }
-    })();
+    };
+
+    fetchSubmission();
+
+    return () => clearTimeout(timer);
   }, [id]);
 
   useEffect(() => {
@@ -40,7 +56,7 @@ function StatusDetail() {
       id: submission.submission.id,
       user: submission.submission.user,
       title: submission.problem.title,
-      state: submission.submission.state,
+      state: submission.submission.state ?? '',
       time: submission.submission.time,
       datetime: submission.submission.datetime,
     });
@@ -54,36 +70,41 @@ function StatusDetail() {
   }, [router.isReady]);
 
   return (
-    <div css={style.container}>
-      <div css={style.title}>풀이 상세</div>
-      {!submission || !status ? (
-        <div>로딩중</div>
-      ) : (
-        <>
-          <StatusList status={status} />
-          <div css={style.codeBox}>
-            <Editor
-              defaultLanguage={submission.submission.language}
-              defaultValue={submission.submission.code}
-              options={{
-                readOnly: true,
-                minimap: {
-                  enabled: false,
-                },
-                scrollbar: {
-                  vertical: 'hidden',
-                  verticalScrollbarSize: 0,
-                },
-                scrollBeyondLastLine: false,
-              }}
-            />
-          </div>
-        </>
-      )}
-      <div css={style.footer}>
-        <Button>복사</Button>
+    <>
+      <Head>
+        <title>MOJ | 풀이 상세</title>
+      </Head>
+      <div css={style.container}>
+        <div css={style.title}>풀이 상세</div>
+        {!submission || !status ? (
+          <div>로딩중</div>
+        ) : (
+          <>
+            <StatusList status={status} />
+            <div css={style.codeBox}>
+              <Editor
+                defaultLanguage={submission.submission.language}
+                defaultValue={submission.submission.code}
+                options={{
+                  readOnly: true,
+                  minimap: {
+                    enabled: false,
+                  },
+                  scrollbar: {
+                    vertical: 'hidden',
+                    verticalScrollbarSize: 0,
+                  },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+          </>
+        )}
+        <div css={style.footer}>
+          <Button>복사</Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

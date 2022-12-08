@@ -5,6 +5,7 @@ import axiosInstance from '../../../axios';
 import Button from '../../../components/common/Button';
 import IOList, { useIOList } from '../../../components/common/IOList';
 import style from '../../../styles/style';
+import Head from 'next/head';
 
 function Testcase() {
   const router = useRouter();
@@ -38,7 +39,7 @@ function Testcase() {
   const handleSaveClick = async () => {
     try {
       const testcases = testcase.map((val) => {
-        if (val.input === '' || val.output === '') {
+        if (val.output === '') {
           alert('Testcase는 비워둘 수 없습니다.');
           throw new Error('TC is empty');
         }
@@ -58,26 +59,31 @@ function Testcase() {
   };
 
   return (
-    <div css={style.container}>
-      <div css={style.header}>
-        <div css={style.titleContainer}>
-          <span css={style.title}>테스트 케이스 편집</span>
-          <span css={style.problemTitle}>{title}</span>
+    <>
+      <Head>
+        <title>MOJ | 테스트케이스 등록</title>
+      </Head>
+      <div css={style.container}>
+        <div css={style.header}>
+          <div css={style.titleContainer}>
+            <span css={style.title}>테스트 케이스 편집</span>
+            <span css={style.problemTitle}>{title}</span>
+          </div>
+          <Button minWidth="60px" onClick={handleAddClick}>
+            + 추가
+          </Button>
         </div>
-        <Button minWidth="60px" onClick={handleAddClick}>
-          + 추가
-        </Button>
+        <IOList arr={testcase} setArr={setTestCase} />
+        <div css={style.footer}>
+          <Button style="cancel" minWidth="60px" onClick={handleCancelClick}>
+            취소
+          </Button>
+          <Button minWidth="60px" onClick={handleSaveClick}>
+            저장
+          </Button>
+        </div>
       </div>
-      <IOList arr={testcase} setArr={setTestCase} />
-      <div css={style.footer}>
-        <Button style="cancel" minWidth="60px" onClick={handleCancelClick}>
-          취소
-        </Button>
-        <Button minWidth="60px" onClick={handleSaveClick}>
-          저장
-        </Button>
-      </div>
-    </div>
+    </>
   );
 }
 
