@@ -26,10 +26,21 @@ function Status() {
     null,
   );
 
+  const [range, setRange] = React.useState<{ start: number; end: number }>({
+    start: -1,
+    end: -1,
+  });
+
+  function createUrl(
+    page: number,
+    { start, end }: { start: number; end: number },
+  ) {
+    if (start === -1 || end === -1) return `/api/submissions?page=${page}`;
+    else return `/api/submissions?start=${start}&end=${end}`;
+  }
+
   React.useEffect(() => {
     if (!router.isReady) return;
-
-    let timer: NodeJS.Timeout | undefined = undefined;
 
     async function fetchSubmissionList() {
       const page = router.query.page;
@@ -40,21 +51,33 @@ function Status() {
       else _page = +page;
 
       const { data } = await axiosInstance.get<StatusListResponseData>(
-        `/api/submissions?page=${_page}`,
+        createUrl(_page, { start: -1, end: -1 }),
       );
       setStatus(data);
 
-      if (data.submissions.some(({ result }) => result === null)) {
-        const timer = setTimeout(() => {
-          fetchSubmissionList();
-        }, 1000);
-      }
+      const start = data.submissions.at(-1)?.id;
+      const end = data.submissions.at(0)?.id;
+
+      setRange({ start: start ?? -1, end: end ?? -1 });
     }
 
     fetchSubmissionList();
+  }, [router.isReady, router.query.page]);
+
+  React.useEffect(() => {
+    if (status === null || range.start === -1 || range.end === -1) return;
+    let timer: NodeJS.Timeout | undefined = undefined;
+    if (status.submissions.some(({ result }) => result === null)) {
+      timer = setTimeout(async () => {
+        const { data } = await axiosInstance.get<StatusListResponseData>(
+          createUrl(0, range),
+        );
+        setStatus(data);
+      }, 1000);
+    }
 
     return () => clearTimeout(timer);
-  }, [router.isReady, router.query.page]);
+  }, [range, status]);
 
   return (
     <>
