@@ -19,19 +19,34 @@ function StatusDetail() {
 
   useEffect(() => {
     if (!id) return;
-    (async () => {
+
+    let timer: NodeJS.Timeout | undefined = undefined;
+
+    const fetchSubmission = async () => {
       try {
         const res = await (
-          await axiosInstance.get(`/api/submissions/${id}`)
+          await axiosInstance.get<SubmissionResopnseData>(
+            `/api/submissions/${id}`,
+          )
         ).data;
         setSubmission(res);
+
+        if (res.submission.state === null) {
+          timer = setTimeout(() => {
+            fetchSubmission();
+          }, 1000);
+        }
       } catch (err) {
         if (axios.isAxiosError(err)) {
           alert(err.response?.data.message);
           router.back();
         }
       }
-    })();
+    };
+
+    fetchSubmission();
+
+    return () => clearTimeout(timer);
   }, [id]);
 
   useEffect(() => {
@@ -41,7 +56,7 @@ function StatusDetail() {
       id: submission.submission.id,
       user: submission.submission.user,
       title: submission.problem.title,
-      state: submission.submission.state,
+      state: submission.submission.state ?? '',
       time: submission.submission.time,
       datetime: submission.submission.datetime,
     });

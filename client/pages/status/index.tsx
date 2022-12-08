@@ -6,6 +6,19 @@ import { css } from '@emotion/react';
 import style from '../../styles/style';
 import Head from 'next/head';
 
+interface SubmissionsResponse {
+  currentPage: number;
+  pageCount: number;
+  submissions: {
+    createdAt: string;
+    id: number;
+    user: string;
+    title: string;
+    time: number;
+    result: string;
+  }[];
+}
+
 function Status() {
   const router = useRouter();
 
@@ -16,6 +29,8 @@ function Status() {
   React.useEffect(() => {
     if (!router.isReady) return;
 
+    let timer: NodeJS.Timeout | undefined = undefined;
+
     async function fetchSubmissionList() {
       const page = router.query.page;
 
@@ -24,13 +39,21 @@ function Status() {
       else if (Array.isArray(page)) _page = 1;
       else _page = +page;
 
-      const { data } = await axiosInstance.get(
+      const { data } = await axiosInstance.get<StatusListResponseData>(
         `/api/submissions?page=${_page}`,
       );
       setStatus(data);
+
+      if (data.submissions.some(({ result }) => result === null)) {
+        const timer = setTimeout(() => {
+          fetchSubmissionList();
+        }, 1000);
+      }
     }
 
     fetchSubmissionList();
+
+    return () => clearTimeout(timer);
   }, [router.isReady, router.query.page]);
 
   return (
