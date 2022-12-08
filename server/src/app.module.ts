@@ -5,6 +5,8 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { ProblemsModule } from './problems/problems.module';
 import { UsersModule } from './users/users.module';
 import { SubmissionsModule } from './submissions/submissions.module';
+import { CachingModule } from './caching/caching.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { SubmissionsModule } from './submissions/submissions.module';
     ProblemsModule,
     UsersModule,
     SubmissionsModule,
+    CachingModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],
