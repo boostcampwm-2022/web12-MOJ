@@ -57,15 +57,15 @@ export class Consumer {
   @Process()
   async handleSubmission(job: Job) {
     const containerIndex = this.isReadyContainer.shift();
-    const executeScoring = new MyPromise(async (resolve) => {
+    const scoringPromise = new MyPromise(async (resolve) => {
       await this.scoringService.createSubmission(job.data.data, containerIndex);
       this.isReadyContainer.push(containerIndex);
       resolve(job.data.data);
     });
 
-    executeScoring.submissionId = job.data.data;
+    scoringPromise.submissionId = job.data.data;
 
-    this.promises.push(executeScoring);
+    this.promises.push(scoringPromise);
 
     if (this.promises.length === 3) {
       const idx = await Promise.race(this.promises);
