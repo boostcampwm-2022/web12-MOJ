@@ -149,17 +149,39 @@ export class ProblemsService {
         .createQueryBuilder('problem')
         .select(['problem.id', 'problem.title'])
         .where('problem.visible = :visible', { visible: true })
-        .skip((page - 1) * 20)
-        .take(20)
+        .leftJoin(
+          (qb) => {
+            return qb
+              .select('submission.problemId', 'problem_id')
+              .addSelect('COUNT(*)', 'count')
+              .from(Submission, 'submission')
+              .groupBy('problem_id');
+          },
+          'submission',
+          'problem.id = "submission"."problem_id"',
+        )
+        .addSelect('COALESCE(submission.count, 0)', 'count')
+        .offset((page - 1) * 20)
+        .limit(20)
         .orderBy('problem.id', 'DESC')
-        .getMany();
+        .getRawMany();
 
       const problemCount = await this.problemRepository.count({
         where: { visible: true },
       });
       const pageCount = Math.ceil(problemCount / 20);
 
-      return { problems, pageCount, currentPage: Number(page) };
+      return {
+        problems: problems.map(({ problem_id, problem_title, count }) => {
+          return {
+            id: problem_id,
+            title: problem_title,
+            count: count,
+          };
+        }),
+        pageCount,
+        currentPage: Number(page),
+      };
     } else if (session.userName === username) {
       const problems = await this.problemRepository
         .createQueryBuilder('problem')
@@ -180,7 +202,6 @@ export class ProblemsService {
         where: { userId: session.userId },
       });
       const pageCount = Math.ceil(problemCount / 20);
-
       return { problems, pageCount, currentPage: Number(page) };
     } else {
       throw new ForbiddenException('다른 사람의 문제에 접근할 수 없습니다.');

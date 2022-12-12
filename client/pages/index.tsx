@@ -53,15 +53,15 @@ function Home() {
                 },
               },
               {
-                path: 'rate',
-                name: '정답 비율',
+                path: 'count',
+                name: '총 제출 수',
                 weight: 1,
                 style: {
                   all: css`
                     text-align: center;
                   `,
                 },
-                format: (value: number) => `--%`,
+                format: (value: number) => `${value} 개`,
               },
             ]}
             rowHref={(problem: ProblemSummary) => `/problem/${problem.id}`}

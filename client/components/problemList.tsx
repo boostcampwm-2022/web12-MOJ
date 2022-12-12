@@ -40,7 +40,7 @@ interface ProblemListProps {
 const head = [
   { name: '문제 번호', weight: 1, isCenter: false },
   { name: '제목', weight: 4, isCenter: false },
-  { name: '정답 비율', weight: 1, isCenter: true },
+  { name: '총 제출 수', weight: 1, isCenter: true },
 ];
 
 function ProblemList({ pageCount, currentPage, problems }: ProblemListProps) {

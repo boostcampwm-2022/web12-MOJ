@@ -72,7 +72,10 @@ function Status() {
         const { data } = await axiosInstance.get<StatusListResponseData>(
           createUrl(0, range),
         );
-        setStatus(data);
+        setStatus((before) => {
+          if (!before) return null;
+          return { ...before, submissions: data.submissions };
+        });
       }, 1000);
     }
 
