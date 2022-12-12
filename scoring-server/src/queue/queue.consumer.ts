@@ -3,9 +3,40 @@ import { ConfigService } from '@nestjs/config';
 import { ScoringService } from 'src/scoring/scoring.service';
 import { Job } from 'bull';
 
-type MyPromise = Promise<any> & {
+class MyPromise<T> extends Promise<T> {
   submissionId: number;
-};
+
+  constructor(
+    executor: (
+      resolve: (value?: T | PromiseLike<T>) => void,
+      reject: (reason?: any) => void,
+    ) => void,
+  ) {
+    super(executor);
+  }
+
+  then<TResult1 = T, TResult2 = never>(
+    onfulfilled?:
+      | ((value: T) => TResult1 | PromiseLike<TResult1>)
+      | undefined
+      | null,
+    onrejected?:
+      | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+      | undefined
+      | null,
+  ): MyPromise<TResult1 | TResult2> {
+    return new MyPromise((resolve, reject) => {
+      super.then(
+        (value) => {
+          resolve(onfulfilled(value));
+        },
+        (reason) => {
+          reject(onrejected(reason));
+        },
+      );
+    });
+  }
+}
 
 @Processor('scoring')
 export class Consumer {
@@ -26,18 +57,15 @@ export class Consumer {
   @Process()
   async handleSubmission(job: Job) {
     const containerIndex = this.isReadyContainer.shift();
-    console.log(containerIndex);
-    const promise = new Promise(async (resolve) => {
+    const scoringPromise = new MyPromise(async (resolve) => {
       await this.scoringService.createSubmission(job.data.data, containerIndex);
       this.isReadyContainer.push(containerIndex);
-      resolve(null);
-    }).then(() => {
-      return job.data.data;
-    }) as MyPromise;
+      resolve(job.data.data);
+    });
 
-    promise.submissionId = job.data.data;
+    scoringPromise.submissionId = job.data.data;
 
-    this.promises.push(promise);
+    this.promises.push(scoringPromise);
 
     if (this.promises.length === 3) {
       const idx = await Promise.race(this.promises);
