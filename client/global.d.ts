@@ -21,6 +21,7 @@ interface ProblemSummary {
   id: number;
   title: string;
   rate: number;
+  count: number;
 }
 
 interface ProblemListResponseData {
