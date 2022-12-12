@@ -49,7 +49,7 @@ export class SubmissionsController {
       throw new UnauthorizedException('로그인이 되어있지 않습니다.');
     }
 
-    return await this.submissionsService.findOne(submissionId);
+    return await this.submissionsService.findOne(submissionId, session.userId);
   }
 
   @Post('results/:id')

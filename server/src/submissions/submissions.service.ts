@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -209,15 +210,49 @@ export class SubmissionsService {
     return { submissions, currentPage: page, pageCount };
   }
 
-  async findOne(submissionID: number) {
-    // TODO: 403 구현
-
+  async findOne(submissionID: number, userId: number) {
     const submission = await this.submissionRepository.findOneBy({
       id: submissionID,
     });
 
     if (!submission) {
       throw new NotFoundException('해당 제출이 존재하지 않습니다.');
+    }
+
+    const problemId = submission.problemId;
+
+    const problemOwnerId = (
+      await this.problemRepository.findOne({
+        select: { userId: true },
+        where: {
+          id: submission.problemId,
+        },
+      })
+    ).userId;
+
+    if (problemOwnerId !== userId && submission.userId !== userId) {
+      const [{ count }] = await this.resultRepository
+        .createQueryBuilder('result')
+        .innerJoinAndMapOne(
+          'result.submissionId',
+          (subQuery) =>
+            subQuery
+              .select()
+              .from(Submission, 'submission')
+              .where('submission.userId = :userid', { userid: userId })
+              .andWhere('submission.problemId = :problemid', {
+                problemid: problemId,
+              }),
+          't1',
+          't1.id = result.submissionId',
+        )
+        .where('result.stateId = :stateId', { stateId: 1 })
+        .select('COUNT(*) as count')
+        .getRawMany();
+
+      if (Number(count) === 0) {
+        throw new ForbiddenException('문제를 맞춘 후 다시 시도하세요.');
+      }
     }
 
     const promises = [];
