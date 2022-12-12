@@ -69,6 +69,12 @@ function StatusDetail() {
     }
   }, [router.isReady]);
 
+  async function copyCodeToClipboard() {
+    if (!submission) return;
+    await navigator.clipboard.writeText(submission.submission.code);
+    alert('코드 복사가 완료되었습니다.');
+  }
+
   return (
     <>
       <Head>
@@ -101,7 +107,7 @@ function StatusDetail() {
           </>
         )}
         <div css={style.footer}>
-          <Button>복사</Button>
+          <Button onClick={copyCodeToClipboard}>복사</Button>
         </div>
       </div>
     </>
