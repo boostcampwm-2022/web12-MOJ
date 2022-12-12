@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
+import { MdContentCopy } from 'react-icons/md';
 
 interface ProblemContainerProps {
   problem: Problem;
@@ -32,6 +33,7 @@ const style = {
   `,
   h3: css`
     color: #00227b;
+    display: inline;
   `,
   exampleContainer: css`
     display: flex;
@@ -45,6 +47,19 @@ const style = {
     padding: 5px;
     border-radius: 5px;
   `,
+  exampleTitleContainer: css`
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+  `,
+  copyText: css`
+    color: #00227b;
+    :hover {
+      cursor: pointer;
+    }
+    font-size: 0.8em;
+    margin: auto 4px;
+  `,
   input: css`
     border: none;
     background-color: #eaeaea;
@@ -53,9 +68,22 @@ const style = {
     overflow-x: auto;
     margin-right: 10px;
   `,
+
+  copy: css`
+    :hover {
+      cursor: pointer;
+      font-size: 13px;
+    }
+    color: #00227b;
+    font-size: 12px;
+  `,
 };
 
 function ProblemContainer({ problem }: ProblemContainerProps) {
+  async function copyExampleToClipboard(example: string) {
+    await navigator.clipboard.writeText(example);
+  }
+
   return (
     <>
       <header css={style.header}>
@@ -80,7 +108,11 @@ function ProblemContainer({ problem }: ProblemContainerProps) {
           return (
             <div css={style.exampleContainer} key={idx}>
               <div css={style.example}>
-                <h3 css={style.h3}>예제 입력 {idx + 1}</h3>
+                <h3 css={style.h3}>예제 입력 {idx + 1} </h3>
+                <MdContentCopy
+                  css={style.copy}
+                  onClick={() => copyExampleToClipboard(input)}
+                />
                 <pre css={style.input}>{input}</pre>
               </div>
               <div css={style.example}>
