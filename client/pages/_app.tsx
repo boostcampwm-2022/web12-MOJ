@@ -14,8 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
           body,
           html {
             margin: 0;
-            // 너 고정.
             height: 100%;
+            font-family: 'NanumSquare';
           }
 
           #__next {
