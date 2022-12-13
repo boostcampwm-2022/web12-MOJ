@@ -25,9 +25,6 @@ const WrappedEditor = (
       ]}
       initialEditType="markdown"
       autofocus={false}
-      onFocus={() => {
-        console.log('focus');
-      }}
     />
   );
 };

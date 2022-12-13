@@ -22,6 +22,7 @@ interface ProblemSummary {
   title: string;
   rate: number;
   count: number;
+  username: string;
 }
 
 interface ProblemListResponseData {

@@ -69,14 +69,10 @@ function MyProblem() {
       fetchMyProblemList(page);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          alert('문제 번호가 숫자가 아닙니다.');
-        } else if (error.response?.status === 401) {
-          alert('로그인이 필요합니다.');
-        } else if (error.response?.status === 403) {
-          alert('문제 편집 권한이 없습니다.');
-        } else if (error.response?.status === 404) {
-          alert('문제를 찾을 수 없습니다.');
+        if (error.response?.data.message) {
+          alert(error.response.data.message);
+        } else {
+          alert('오류가 발생했습니다.');
         }
       }
     }
