@@ -76,6 +76,7 @@ const newStyle = {
     display: flex;
     height: calc(100% - 70px);
     width: 100%;
+    position: absolute;
   `,
   problemViewer: css`
     height: 100%;
