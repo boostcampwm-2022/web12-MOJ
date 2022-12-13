@@ -1,8 +1,5 @@
-import { HttpModule } from '@nestjs/axios';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CachingModule } from 'src/caching/caching.module';
-import { CachingService } from 'src/caching/caching.service';
 import { Problem } from 'src/problems/entities/problem.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Language } from './entities/language.entity';
@@ -23,7 +20,6 @@ import { SubmissionsService } from './submissions.service';
       Problem,
       Result,
     ]),
-    forwardRef(() => CachingModule),
   ],
   exports: [SubmissionsService],
   controllers: [SubmissionsController],

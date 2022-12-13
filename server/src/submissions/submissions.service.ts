@@ -1,8 +1,6 @@
 import {
   ConflictException,
   ForbiddenException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,7 +13,6 @@ import { User } from 'src/users/entities/user.entity';
 import { Result } from './entities/result.entity';
 import { State } from './entities/state.entity';
 import { PostResultDTO } from './dtos/post-result.dto';
-import { CachingService } from 'src/caching/caching.service';
 
 export interface SubmissionType {
   id: number;
@@ -29,8 +26,6 @@ export interface SubmissionType {
 @Injectable()
 export class SubmissionsService {
   constructor(
-    @Inject(forwardRef(() => CachingService))
-    private readonly cachingService: CachingService,
     @InjectRepository(Submission)
     private submissionRepository: Repository<Submission>,
     @InjectRepository(Language)
@@ -88,16 +83,6 @@ export class SubmissionsService {
   }
 
   async findAllByRange(start: number, end: number) {
-    const cachedRange = await this.cachingService.findCachedSubmissionRange();
-    if (cachedRange.start <= start && cachedRange.end >= end) {
-      const cachedSumbission = await this.cachingService.findAllSubmission();
-      return {
-        submissions: cachedSumbission.filter(
-          (submission) => submission.id >= start && submission.id <= end,
-        ),
-      };
-    }
-
     const submissions = await this.submissionRepository
       .createQueryBuilder('submission')
       .leftJoinAndMapOne(
@@ -140,31 +125,6 @@ export class SubmissionsService {
 
   async findAll(page: number) {
     const pageSize = 20;
-    const range = await this.submissionRepository.find({
-      select: { id: true },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: {
-        id: 'DESC',
-      },
-    });
-
-    const start = range.at(-1).id,
-      end = range.at(0).id;
-
-    const cachedRange = await this.cachingService.findCachedSubmissionRange();
-    if (cachedRange.start <= start && cachedRange.end >= end) {
-      const cachedSumbission = await this.cachingService.findAllSubmission();
-      const allSubmissionsCount = await this.submissionRepository.count();
-      const pageCount = Math.ceil(allSubmissionsCount / pageSize);
-      return {
-        submissions: cachedSumbission.filter(
-          (submission) => submission.id >= start && submission.id <= end,
-        ),
-        currentPage: page,
-        pageCount,
-      };
-    }
 
     const submissions = await this.submissionRepository
       .createQueryBuilder('submission')
@@ -337,13 +297,13 @@ export class SubmissionsService {
     });
 
     if (!submission) {
-      throw new NotFoundException('존재하지 않는 제출입니다. ');
+      throw new NotFoundException('존재하지 않는 제출입니다.');
     }
 
     const result = await this.resultRepository.findOneBy({ submissionId });
 
     if (!!result) {
-      throw new ConflictException('해당 제출은 이미 채점되었습니다. ');
+      throw new ConflictException('해당 제출은 이미 채점되었습니다.');
     }
 
     try {
