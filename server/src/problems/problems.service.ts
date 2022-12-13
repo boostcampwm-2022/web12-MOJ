@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -109,6 +110,18 @@ export class ProblemsService {
     if (!problem) throw new NotFoundException('해당 문제가 없습니다.');
     if (problem.userId !== session.userId) {
       throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    if (updateProblemDTO.visible === true && !problem.visible) {
+      const testcaseCount = await this.testcaseRepository.countBy({
+        problemId: problem.id,
+      });
+
+      if (testcaseCount === 0) {
+        throw new ConflictException(
+          'TC를 하나 이상 등록한 다음 문제를 공개할 수 있습니다.',
+        );
+      }
     }
 
     Object.assign(problem, updateProblemDTO);
