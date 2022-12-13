@@ -24,7 +24,14 @@ export default function App({ Component, pageProps }: AppProps) {
         `}
       />
       <GNB />
-      <Component {...pageProps} />
+      <div
+        css={css`
+          padding-top: 70px;
+          height: calc(100% - 70px);
+        `}
+      >
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }
