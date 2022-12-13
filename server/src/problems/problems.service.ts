@@ -20,6 +20,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ProblemsService {
@@ -173,6 +174,8 @@ export class ProblemsService {
           'submission',
           'problem.id = "submission"."problem_id"',
         )
+        .leftJoin(User, 'user', 'user.id = problem.userId')
+        .addSelect('user.name')
         .addSelect('COALESCE(submission.count, 0)', 'count')
         .offset((page - 1) * 20)
         .limit(20)
@@ -185,13 +188,16 @@ export class ProblemsService {
       const pageCount = Math.ceil(problemCount / 20);
 
       return {
-        problems: problems.map(({ problem_id, problem_title, count }) => {
-          return {
-            id: problem_id,
-            title: problem_title,
-            count: count,
-          };
-        }),
+        problems: problems.map(
+          ({ problem_id, problem_title, count, user_name }) => {
+            return {
+              id: problem_id,
+              title: problem_title,
+              count: count,
+              username: user_name,
+            };
+          },
+        ),
         pageCount,
         currentPage: Number(page),
       };
