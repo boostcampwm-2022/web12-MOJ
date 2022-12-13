@@ -1,7 +1,8 @@
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,34 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       stopAtFirstError: true,
+      exceptionFactory: (errors) => {
+        const getErrorMessagesFromValidationErrorObject = (
+          error: ValidationError,
+        ): string[] => {
+          const current = [];
+          if (error.constraints)
+            current.push(...Object.values(error.constraints));
+
+          for (const children of error.children) {
+            current.push(
+              ...getErrorMessagesFromValidationErrorObject(children),
+            );
+          }
+
+          return current;
+        };
+
+        const errorMessages = errors.reduce((before, current) => {
+          return [
+            ...before,
+            ...getErrorMessagesFromValidationErrorObject(current),
+          ];
+        }, []);
+
+        const uniqueErrorMessages = [...new Set(errorMessages)];
+
+        throw new BadRequestException({ message: uniqueErrorMessages });
+      },
     }),
   );
 

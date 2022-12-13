@@ -16,13 +16,13 @@ class Example {
   @IsOptional()
   input: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '예제 출력은 비워둘 수 없습니다.' })
   @IsOptional()
   output: string;
 }
 
 export class UpdateProblemDTO {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '제목은 비워둘 수 없습니다.' })
   @IsOptional()
   title: string;
 
@@ -37,19 +37,19 @@ export class UpdateProblemDTO {
   @IsOptional()
   memoryLimit: number;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '본문은 비워둘 수 없습니다.' })
   @IsOptional()
   content: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '입력은 비워둘 수 없습니다.' })
   @IsOptional()
   input: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '출력은 비워둘 수 없습니다.' })
   @IsOptional()
   output: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '예제 설명은 비워둘 수 없습니다.' })
   @IsOptional()
   explanation: string;
 
