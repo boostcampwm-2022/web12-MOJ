@@ -14,8 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
           body,
           html {
             margin: 0;
-            // 너 고정.
             height: 100%;
+            font-family: 'NanumSquare';
           }
 
           #__next {
@@ -24,7 +24,14 @@ export default function App({ Component, pageProps }: AppProps) {
         `}
       />
       <GNB />
-      <Component {...pageProps} />
+      <div
+        css={css`
+          padding-top: 70px;
+          height: calc(100% - 70px);
+        `}
+      >
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }

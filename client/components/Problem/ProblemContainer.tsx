@@ -67,6 +67,7 @@ const style = {
     padding: 10px 15px;
     overflow-x: auto;
     margin-right: 10px;
+    font-family: 'NanumSquare';
   `,
 
   copy: css`
