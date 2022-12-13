@@ -45,10 +45,20 @@ function Home() {
               {
                 path: 'title',
                 name: '제목',
-                weight: 4,
+                weight: 3,
                 style: {
                   row: css`
                     color: #3949ab;
+                  `,
+                },
+              },
+              {
+                path: 'username',
+                name: '만든 사람',
+                weight: 1,
+                style: {
+                  all: css`
+                    text-align: center;
                   `,
                 },
               },
