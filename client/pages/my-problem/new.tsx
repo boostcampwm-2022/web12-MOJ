@@ -76,6 +76,9 @@ function NewMyProblem() {
           alert('로그인이 필요한 서비스입니다.');
           Router.back();
         }
+        if (error.response?.status === 429) {
+          alert('너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.');
+        }
       }
     }
   };
