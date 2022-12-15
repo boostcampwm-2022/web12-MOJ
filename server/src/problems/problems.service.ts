@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -290,6 +291,12 @@ export class ProblemsService {
 
     if (!userId || problem.userId !== userId) {
       throw new ForbiddenException('권한이 없습니다.');
+    }
+
+    if (postTestCaseDTO.testcase.length > 50) {
+      throw new BadRequestException(
+        '테스트 케이스 개수는 50개를 넘을 수 없습니다.',
+      );
     }
 
     await this.dataSource.manager.transaction(
