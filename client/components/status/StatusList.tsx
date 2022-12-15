@@ -41,7 +41,6 @@ function StatusList({ status }: StatusListProps) {
             weight: 1,
             style: {
               row: (row: StatusSummary) => {
-                console.log(row);
                 if (row.state === '정답') {
                   return css`
                     color: green;
