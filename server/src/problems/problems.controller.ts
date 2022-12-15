@@ -12,6 +12,7 @@ import {
   Query,
   DefaultValuePipe,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateProblemDTO } from './dtos/create-problem.dto';
 import { PostTestCaseDTO } from './dtos/post-testcase.dto';
@@ -19,11 +20,15 @@ import { UpdateProblemDTO } from './dtos/update-problem.dto';
 import { ProblemsService } from './problems.service';
 import { PostSubmissionDTO } from './dtos/post-submission.dto';
 import { Request } from 'express';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { ThrottlerBehindProxyGuard } from './throttler-behind-proxy.guard';
 
+@UseGuards(ThrottlerBehindProxyGuard)
 @Controller('problems')
 export class ProblemsController {
   constructor(private readonly problemsService: ProblemsService) {}
 
+  @Throttle(1, 60)
   @Post()
   async create(
     @Req() req: Request,
@@ -51,6 +56,7 @@ export class ProblemsController {
     return this.problemsService.findAll(page, username, session);
   }
 
+  @SkipThrottle()
   @Get('/:id')
   async findOne(
     @Req() req: Request,
@@ -92,6 +98,7 @@ export class ProblemsController {
     return this.problemsService.updateOne(id, session, updateProblemDTO);
   }
 
+  @SkipThrottle()
   @Get(':id/tc')
   async findOneTestCase(
     @Req() req: Request,
