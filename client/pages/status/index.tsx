@@ -6,19 +6,6 @@ import { css } from '@emotion/react';
 import style from '../../styles/style';
 import Head from 'next/head';
 
-interface SubmissionsResponse {
-  currentPage: number;
-  pageCount: number;
-  submissions: {
-    createdAt: string;
-    id: number;
-    user: string;
-    title: string;
-    time: number;
-    result: string;
-  }[];
-}
-
 function Status() {
   const router = useRouter();
 
@@ -123,6 +110,20 @@ function Status() {
                   path: 'result',
                   name: '결과',
                   weight: 1,
+                  style: {
+                    row: (row: StatusSummary) => {
+                      if (row.result === '정답') {
+                        return css`
+                          color: #4caf50;
+                        `;
+                      }
+                      if (row.result === '오답') {
+                        return css`
+                          color: #f44336;
+                        `;
+                      }
+                    },
+                  },
                 },
                 {
                   path: 'time',
