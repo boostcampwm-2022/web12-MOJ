@@ -180,7 +180,7 @@ function MyProblem() {
                   },
                 },
                 {
-                  path: 'id',
+                  path: undefined,
                   name: '편집',
                   weight: 0.5,
                   style: {
@@ -188,11 +188,12 @@ function MyProblem() {
                       text-align: center;
                     `,
                   },
-                  format: (value: number) => (
-                    <Link href={`/my-problem/edit/${value}`}>
-                      <EditSvg />
-                    </Link>
-                  ),
+                  onclick: (e, row: MyProblemSummary) => {
+                    e.preventDefault();
+
+                    Router.push(`/my-problem/edit/${row.id}`);
+                  },
+                  format: () => <EditSvg />,
                 },
                 {
                   path: undefined,
@@ -215,7 +216,7 @@ function MyProblem() {
                   format: () => <DeleteSvg />,
                 },
                 {
-                  path: 'id',
+                  path: undefined,
                   name: 'TC 추가',
                   weight: 0.5,
                   style: {
@@ -223,11 +224,12 @@ function MyProblem() {
                       text-align: center;
                     `,
                   },
-                  format: (value: number) => (
-                    <Link href={`/my-problem/tc/${value}`}>
-                      <AddFileSvg />
-                    </Link>
-                  ),
+                  onclick: (e, row: MyProblemSummary) => {
+                    e.preventDefault();
+
+                    Router.push(`/my-problem/tc/${row.id}`);
+                  },
+                  format: () => <AddFileSvg />,
                 },
                 {
                   path: 'visible',
