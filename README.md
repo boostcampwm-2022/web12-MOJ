@@ -34,14 +34,13 @@ _그동안 알고리즘 문제를 출제해보고 싶었지만, 기회가 없으
 _그렇다면 **누구나 알고리즘 문제를 출제하고 풀 수 있는 MOJ**에서 그 기회를 잡아보세요!_
 
 &nbsp; &nbsp; &nbsp; &nbsp;[🌐 배포 사이트](https://www.mincho.life/) &nbsp; &nbsp; &nbsp; &nbsp; |&nbsp; &nbsp; &nbsp; &nbsp;[🗒️ 팀 Notion](https://dull-smelt-df1.notion.site/Mintchoco-Online-Judge-e2a85b23094949ffa6ee5c1bf0cc326a) &nbsp; &nbsp; &nbsp; &nbsp;|&nbsp; &nbsp; &nbsp; &nbsp;
-[📺 데모 영상]()
+[📺 데모 영상](https://youtu.be/wUvWs0nvb60)
 
 ## 📍 주요 기능
 
 ### 문제 채점 💯
 
 - 내 결과 및 다른 사람 코드 확인
-- 채점 결과 검색
 
 ### 문제 출제 🗒️
 
@@ -63,7 +62,12 @@ _그렇다면 **누구나 알고리즘 문제를 출제하고 풀 수 있는 MOJ
 
 끊임없이 고민하고 여러 방법을 시도해보고 있으며 아래 문서에서 확인할 수 있습니다.
 
+- [채점 서비스 발전 과정 요약](https://dull-smelt-df1.notion.site/6869a83fb5644124838e7923558e4e92)
 - [PART1. API 통신으로 구현](https://dull-smelt-df1.notion.site/PART1-API-78473310aa9e46f98b2e705492e97b12)
+- [PART2. Redis 메시지 큐를 이용한 구현](https://dull-smelt-df1.notion.site/PART2-Redis-89ae23f7c2d14556b4608421164f8ce6)
+- [채점 성능 측정](https://dull-smelt-df1.notion.site/09fa1208df60478b95c4e173fa6b7880)
+- [실시간 채점 현황](https://dull-smelt-df1.notion.site/95d0bf2a71394124a82057f1a927f087)
+- [채점 프로그램 작동 원리](https://dull-smelt-df1.notion.site/c7146f0dc58b4299bdd9ad4c5341f8e2)
 
 ## 📍 기술 스택
 
@@ -71,7 +75,8 @@ _그렇다면 **누구나 알고리즘 문제를 출제하고 풀 수 있는 MOJ
 
 ## 📍 아키텍쳐
 
-<img width="700" alt="moj아키텍쳐" src="https://user-images.githubusercontent.com/63294532/205535429-8ae5f452-aec9-4a77-a8a2-3f210f2498d1.png">
+<img width="700" alt="moj아키텍쳐" src="https://user-images.githubusercontent.com/26318372/207270693-d134523a-15f9-40d1-acc3-ef91873252c8.png">
+<img width="700" alt="채점 모델 아키텍처" src="https://user-images.githubusercontent.com/63294532/207267704-447fabc8-ba02-465c-946b-b4b85246f8b6.png">
 
 ## 📍 팀원
 

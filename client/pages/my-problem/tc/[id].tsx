@@ -49,8 +49,10 @@ function Testcase() {
         testcase: testcases,
       });
       router.push('/my-problem');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data.message);
+      }
     }
   };
 

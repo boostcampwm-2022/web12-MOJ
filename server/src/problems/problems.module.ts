@@ -10,9 +10,15 @@ import { ProblemsService } from './problems.service';
 import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bull';
 import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerBehindProxyGuard } from './throttler-behind-proxy.guard';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 1,
+      limit: 1,
+    }),
     TypeOrmModule.forFeature([
       Problem,
       Example,
@@ -36,7 +42,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
     }),
     HttpModule,
   ],
-  providers: [ProblemsService],
+  providers: [ProblemsService, ThrottlerBehindProxyGuard],
   controllers: [ProblemsController],
 })
 export class ProblemsModule {}
