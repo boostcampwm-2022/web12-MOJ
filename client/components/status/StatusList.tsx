@@ -43,12 +43,12 @@ function StatusList({ status }: StatusListProps) {
               row: (row: StatusSummary) => {
                 if (row.state === '정답') {
                   return css`
-                    color: green;
+                    color: #4caf50;
                   `;
                 }
                 if (row.state === '오답') {
                   return css`
-                    color: red;
+                    color: #f44336;
                   `;
                 }
               },
