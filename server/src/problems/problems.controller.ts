@@ -43,6 +43,7 @@ export class ProblemsController {
     }
   }
 
+  @SkipThrottle()
   @Get()
   async findAll(
     @Req() req: Request,
@@ -172,6 +173,7 @@ export class ProblemsController {
     );
   }
 
+  @SkipThrottle()
   @Delete(':id')
   async deleteProblem(
     @Req() req: Request,
