@@ -39,6 +39,20 @@ function StatusList({ status }: StatusListProps) {
             path: 'state',
             name: '결과',
             weight: 1,
+            style: {
+              row: (row: StatusSummary) => {
+                if (row.state === '정답') {
+                  return css`
+                    color: #4caf50;
+                  `;
+                }
+                if (row.state === '오답') {
+                  return css`
+                    color: #f44336;
+                  `;
+                }
+              },
+            },
           },
           {
             path: 'time',
