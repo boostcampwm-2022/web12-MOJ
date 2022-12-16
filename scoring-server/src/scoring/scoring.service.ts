@@ -93,14 +93,19 @@ export class ScoringService {
       return acc;
     }, []);
 
+    const cleanUp = () => {
+      fs.rm(submissionPath, { recursive: true, force: true });
+    };
+
     promises.push(fs.writeFile(codeFilePath, submission.code, 'utf-8'));
 
     await Promise.all(promises);
 
-    const execPromise = async (cmd: string) => {
+    const execPromise = async (cmd: string, onError) => {
       return new Promise((resolve, reject) => {
         exec(cmd, (err, stdout, stderr) => {
           if (err) {
+            onError();
             reject(err);
           } else {
             resolve({ stdout, stderr });
@@ -111,10 +116,12 @@ export class ScoringService {
 
     await execPromise(
       `NAME=judger-${containerIndex} ./docker/run.sh ${containerIndex}`,
+      cleanUp,
     );
 
     await execPromise(
       `docker cp ${submissionPath}/. judger-${containerIndex}:/submission`,
+      cleanUp,
     );
 
     const scoringProcess = spawn('docker', [
