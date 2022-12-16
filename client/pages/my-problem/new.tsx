@@ -2,7 +2,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import dynamic from 'next/dynamic';
 import { Editor, EditorProps } from '@toast-ui/react-editor';
 import { css } from '@emotion/react';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import Button from '../../components/common/Button';
 import Router from 'next/router';
 import axiosInstance from '../../axios';

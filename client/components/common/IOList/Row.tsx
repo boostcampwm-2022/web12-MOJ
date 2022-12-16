@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction, useState } from 'react';
 import InputContainer from './InputContainer';
 import { css } from '@emotion/react';
 import RemoveRowSvg from '../../svgs/removeRow';
