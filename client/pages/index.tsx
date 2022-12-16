@@ -84,12 +84,3 @@ function Home() {
 }
 
 export default Home;
-
-//
-// 문제 [{ number: , title: , 비율:  }, { }];
-// 제출 [{ number: , id: , 문제: , 결과: , 시간: , 제출 시각 }]
-// 출제 [{ number: , title: , 날짜: }]; + 버튼들 UI 상에서만.
-
-// data []
-// colums : [ { name: "문제 번호", path: "number"}, { name: "제목", path: "title" } ]
-// style...

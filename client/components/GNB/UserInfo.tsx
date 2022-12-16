@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import axiosInstance from '../../axios';
 import Button from '../common/Button';
 
@@ -19,7 +19,6 @@ const userNameStyle = css`
 `;
 
 function UserInfo({ isLoggedIn, userName }: UserInfoProps) {
-  const router = useRouter();
   const makeRequestURL = () => {
     const requestURL = 'https://github.com/login/oauth/authorize';
     const redirectURL = `${process.env.SERVER_ORIGIN}${process.env.REDIRECT_URL}`;

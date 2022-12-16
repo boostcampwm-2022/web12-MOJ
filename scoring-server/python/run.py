@@ -103,10 +103,7 @@ def get_memory_usage(pid: int) -> int:
             total += end - start
     return total // 1024
 
-# 문제당 40개 # 천문제
-# 도커 이미지에 모든 테케를 넣으면.. 안되겠죠? 왜냐 켤때마다 데이터만큼 용량 계속 쓰니까
-# 서버에 모든 테케를 저장하고
-# 도커 켤때 어떻게 잘.. 필요한 테케만 복사 안되나? 해줘.. 테케 갱신 큐
+
 def compare_output(
     testcase_output_path: str,
     user_output_path: str
@@ -239,11 +236,6 @@ def run_testcase(
 
 
 if __name__ == "__main__":
-    # 언어, 시간 제한 ( ms ), 메모리 제한 ( MB ), 코드 경로, 테스트 케이스 경로 ( 2개씩 묶어서 처리해야함 )
-    # code_path는 코드가 저장된 폴더 경로를 넘겨주고
-    # language를 이용해서 파일 명을 지정해주는 것을 추천합니다.
-    # 임시로 language를 파일 명으로 사용
-    # code_path는 코드가 저장된 파일이 아니라 폴더의 경로
     _, time_limit, memory_limit = sys.argv
 
     try:

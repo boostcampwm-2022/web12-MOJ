@@ -1,4 +1,3 @@
-import { SetStateAction, Dispatch } from 'react';
 import { css } from '@emotion/react';
 
 interface InputContaierProps {
