@@ -18,10 +18,6 @@ import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ScoringService {
-  private containerCount = parseInt(
-    this.configService.get('CONTAINER_COUNT') || '1',
-  );
-
   constructor(
     @InjectRepository(Testcase)
     private testcaseRepository: Repository<Testcase>,
@@ -29,7 +25,6 @@ export class ScoringService {
     @InjectRepository(Submission)
     private submissionRepository: Repository<Submission>,
     @InjectRepository(Language)
-    private languageRepository: Repository<Language>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}
@@ -98,14 +93,19 @@ export class ScoringService {
       return acc;
     }, []);
 
+    const cleanUp = () => {
+      fs.rm(submissionPath, { recursive: true, force: true });
+    };
+
     promises.push(fs.writeFile(codeFilePath, submission.code, 'utf-8'));
 
     await Promise.all(promises);
 
-    const execPromise = async (cmd: string) => {
+    const execPromise = async (cmd: string, onError) => {
       return new Promise((resolve, reject) => {
         exec(cmd, (err, stdout, stderr) => {
           if (err) {
+            onError();
             reject(err);
           } else {
             resolve({ stdout, stderr });
@@ -116,10 +116,12 @@ export class ScoringService {
 
     await execPromise(
       `NAME=judger-${containerIndex} ./docker/run.sh ${containerIndex}`,
+      cleanUp,
     );
 
     await execPromise(
       `docker cp ${submissionPath}/. judger-${containerIndex}:/submission`,
+      cleanUp,
     );
 
     const scoringProcess = spawn('docker', [

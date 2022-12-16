@@ -1,4 +1,4 @@
-import { style, modal } from '../../styles';
+import { modal } from '../../styles';
 import Button from '../common/Button';
 
 interface DeleteProblemModalProps {

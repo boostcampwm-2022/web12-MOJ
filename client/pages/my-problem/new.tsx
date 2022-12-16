@@ -2,7 +2,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import dynamic from 'next/dynamic';
 import { Editor, EditorProps } from '@toast-ui/react-editor';
 import { css } from '@emotion/react';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import Button from '../../components/common/Button';
 import Router from 'next/router';
 import axiosInstance from '../../axios';
@@ -70,8 +70,7 @@ function NewMyProblem() {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400)
-          alert('입력 형식 및 빈 칸이 없는지 확인하세요.');
+        if (error.response?.status === 400) alert(error.response.data.message);
         if (error.response?.status === 401) {
           alert('로그인이 필요한 서비스입니다.');
           Router.back();
