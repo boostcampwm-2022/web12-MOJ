@@ -1,7 +1,6 @@
-import { css, SerializedStyles } from '@emotion/react';
+import { css } from '@emotion/react';
 import Paginator from './paginator';
 import ListRow from './listRow';
-import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
 
 interface ListProps<T> {
   pageCount: number;

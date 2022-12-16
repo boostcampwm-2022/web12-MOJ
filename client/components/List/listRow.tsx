@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/react';
 import Link from 'next/link';
-import { MouseEventHandler, ReactNode, MouseEvent } from 'react';
+import { ReactNode, MouseEvent } from 'react';
 
 interface ListRowProps<T> {
   row: T;
@@ -32,10 +32,6 @@ const style = {
     }
   `,
 };
-
-function isFunction(x: any) {
-  return Object.prototype.toString.call(x) == '[object Function]';
-}
 
 function ListRow<T>({ rowHref, mapper, row }: ListRowProps<T>) {
   return (

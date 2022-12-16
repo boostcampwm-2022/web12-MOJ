@@ -1,8 +1,4 @@
 import { css } from '@emotion/react';
-import Next from '../public/next.svg';
-import Image from 'next/image';
-import Prev from '../public/prev.svg';
-import { Fragment } from 'react';
 import Link from 'next/link';
 
 interface PaginatorProps {

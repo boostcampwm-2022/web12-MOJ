@@ -18,10 +18,6 @@ import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ScoringService {
-  private containerCount = parseInt(
-    this.configService.get('CONTAINER_COUNT') || '1',
-  );
-
   constructor(
     @InjectRepository(Testcase)
     private testcaseRepository: Repository<Testcase>,
@@ -29,7 +25,6 @@ export class ScoringService {
     @InjectRepository(Submission)
     private submissionRepository: Repository<Submission>,
     @InjectRepository(Language)
-    private languageRepository: Repository<Language>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}
