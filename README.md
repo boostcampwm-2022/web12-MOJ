@@ -34,7 +34,7 @@ _그동안 알고리즘 문제를 출제해보고 싶었지만, 기회가 없으
 _그렇다면 **누구나 알고리즘 문제를 출제하고 풀 수 있는 MOJ**에서 그 기회를 잡아보세요!_
 
 &nbsp; &nbsp; &nbsp; &nbsp;[🌐 배포 사이트](https://www.mincho.life/) &nbsp; &nbsp; &nbsp; &nbsp; |&nbsp; &nbsp; &nbsp; &nbsp;[🗒️ 팀 Notion](https://dull-smelt-df1.notion.site/Mintchoco-Online-Judge-e2a85b23094949ffa6ee5c1bf0cc326a) &nbsp; &nbsp; &nbsp; &nbsp;|&nbsp; &nbsp; &nbsp; &nbsp;
-[📺 데모 영상](https://youtu.be/wUvWs0nvb60)
+[📺 데모 영상](https://youtu.be/Zjw0KJm_lWA)
 
 ## 📍 주요 기능
 
